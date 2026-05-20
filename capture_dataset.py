@@ -1,12 +1,33 @@
 import cv2
 import os
 from datetime import datetime
+import argparse
 
-OK_DIR = "dataset/ok"
-NG_DIR = "dataset/ng"
+PRODUCTS_DIR = "products"
+DEFAULT_PRODUCT = "product_1"
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Capture OK/NOT OK training images for a product recipe."
+    )
+    parser.add_argument(
+        "--product",
+        default=DEFAULT_PRODUCT,
+        help=f"Product recipe folder under {PRODUCTS_DIR}. Default: {DEFAULT_PRODUCT}."
+    )
+    return parser.parse_args()
+
+
+args = parse_args()
+product_root = os.path.join(PRODUCTS_DIR, args.product)
+OK_DIR = os.path.join(product_root, "dataset", "ok")
+NG_DIR = os.path.join(product_root, "dataset", "ng")
 
 os.makedirs(OK_DIR, exist_ok=True)
 os.makedirs(NG_DIR, exist_ok=True)
+
+print(f"Capturing for product: {args.product} ({product_root})")
 
 camera = cv2.VideoCapture(0)
 
