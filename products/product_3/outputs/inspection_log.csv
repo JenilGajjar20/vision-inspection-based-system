@@ -1,0 +1,78 @@
+timestamp,product,stable_decision,frame_decision,prediction,confidence_percent,ok_distance,ng_distance,history_ok,history_ng,history_uncertain,event,image_path
+2026-05-21T17:56:59,product_3,UNCERTAIN,UNCERTAIN,NOT OK,0.1,167.13,167.31,0,0,1,decision_change,
+2026-05-21T17:57:16,product_3,OK,OK,OK,11.4,10.73,13.50,3,0,7,decision_change,
+2026-05-21T17:57:18,product_3,UNCERTAIN,UNCERTAIN,OK,2.6,25.66,27.02,2,0,8,decision_change,
+2026-05-21T17:57:19,product_3,OK,OK,OK,10.5,13.42,16.58,3,0,7,decision_change,
+2026-05-21T17:57:24,product_3,OK,OK,OK,22.6,8.14,12.89,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175724_743145.jpg
+2026-05-21T17:57:24,product_3,OK,OK,OK,22.5,8.21,12.98,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175724_921823.jpg
+2026-05-21T17:57:25,product_3,OK,OK,OK,22.4,8.23,12.99,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175725_122781.jpg
+2026-05-21T17:57:25,product_3,OK,OK,OK,21.5,8.23,12.74,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175725_350702.jpg
+2026-05-21T17:57:25,product_3,OK,OK,OK,22.5,8.16,12.88,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175725_577133.jpg
+2026-05-21T17:57:25,product_3,OK,OK,OK,22.9,7.88,12.55,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175725_771769.jpg
+2026-05-21T17:57:25,product_3,OK,OK,OK,22.1,8.04,12.61,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175725_942027.jpg
+2026-05-21T17:57:26,product_3,OK,OK,OK,22.7,8.09,12.84,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175726_167906.jpg
+2026-05-21T17:57:26,product_3,OK,OK,OK,23.2,8.01,12.84,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175726_377692.jpg
+2026-05-21T17:57:26,product_3,OK,OK,OK,22.9,7.88,12.57,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175726_568936.jpg
+2026-05-21T17:57:26,product_3,OK,OK,OK,22.9,7.88,12.57,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175726_825497.jpg
+2026-05-21T17:57:26,product_3,OK,OK,OK,23.0,7.88,12.60,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175726_992555.jpg
+2026-05-21T17:57:27,product_3,OK,OK,OK,23.5,7.86,12.69,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175727_241174.jpg
+2026-05-21T17:57:27,product_3,OK,OK,OK,24.0,7.82,12.77,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175727_497362.jpg
+2026-05-21T17:57:27,product_3,OK,OK,OK,23.5,7.93,12.82,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175727_700910.jpg
+2026-05-21T17:57:28,product_3,OK,OK,OK,23.2,7.82,12.54,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175728_094213.jpg
+2026-05-21T17:57:28,product_3,OK,OK,OK,23.0,7.95,12.71,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175728_304044.jpg
+2026-05-21T17:57:28,product_3,OK,OK,OK,18.4,8.93,12.95,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175728_552898.jpg
+2026-05-21T17:57:28,product_3,OK,OK,OK,15.2,9.98,13.55,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175728_701245.jpg
+2026-05-21T17:57:28,product_3,OK,OK,OK,11.7,11.58,14.64,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175728_895218.jpg
+2026-05-21T17:57:29,product_3,OK,OK,OK,15.4,9.60,13.08,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175729_291721.jpg
+2026-05-21T17:57:29,product_3,OK,OK,OK,18.8,8.59,12.55,10,0,0,image_saved,products\product_3\outputs\live_product_3_20260521_175729_946860.jpg
+2026-05-21T17:57:38,product_3,UNCERTAIN,UNCERTAIN,OK,1.9,48.58,50.49,2,0,8,decision_change,
+2026-05-21T17:58:40,product_3,NOT OK,NOT OK,NOT OK,8.1,25.95,22.07,0,3,7,decision_change,
+2026-05-21T17:58:40,product_3,UNCERTAIN,UNCERTAIN,NOT OK,6.8,27.64,24.11,0,2,8,decision_change,
+2026-05-21T17:58:41,product_3,NOT OK,NOT OK,NOT OK,8.0,23.81,20.27,0,3,7,decision_change,
+2026-05-21T17:58:44,product_3,UNCERTAIN,UNCERTAIN,NOT OK,7.9,25.78,22.01,0,2,8,decision_change,
+2026-05-21T17:58:45,product_3,NOT OK,NOT OK,NOT OK,8.0,24.48,20.85,0,3,7,decision_change,
+2026-05-21T17:58:45,product_3,UNCERTAIN,UNCERTAIN,NOT OK,7.7,24.18,20.72,0,2,8,decision_change,
+2026-05-21T17:58:48,product_3,NOT OK,NOT OK,NOT OK,8.0,25.68,21.86,0,3,7,decision_change,
+2026-05-21T17:58:49,product_3,NOT OK,NOT OK,NOT OK,8.1,24.05,20.43,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175849_222126.jpg
+2026-05-21T17:58:49,product_3,NOT OK,NOT OK,NOT OK,8.0,23.91,20.37,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175849_416827.jpg
+2026-05-21T17:58:49,product_3,NOT OK,NOT OK,NOT OK,8.0,24.04,20.47,0,6,4,image_saved,products\product_3\outputs\live_product_3_20260521_175849_608792.jpg
+2026-05-21T17:58:49,product_3,NOT OK,NOT OK,NOT OK,8.1,23.93,20.33,0,5,5,image_saved,products\product_3\outputs\live_product_3_20260521_175849_817006.jpg
+2026-05-21T17:58:50,product_3,NOT OK,NOT OK,NOT OK,8.1,23.99,20.40,0,7,3,image_saved,products\product_3\outputs\live_product_3_20260521_175850_011706.jpg
+2026-05-21T17:58:50,product_3,NOT OK,NOT OK,NOT OK,8.1,24.27,20.63,0,6,4,image_saved,products\product_3\outputs\live_product_3_20260521_175850_164443.jpg
+2026-05-21T17:58:50,product_3,NOT OK,NOT OK,NOT OK,8.1,23.98,20.39,0,8,2,image_saved,products\product_3\outputs\live_product_3_20260521_175850_366585.jpg
+2026-05-21T17:58:50,product_3,NOT OK,NOT OK,NOT OK,8.1,24.12,20.50,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175850_551223.jpg
+2026-05-21T17:58:50,product_3,NOT OK,UNCERTAIN,NOT OK,8.0,24.64,21.01,0,9,1,image_saved,products\product_3\outputs\live_product_3_20260521_175850_738357.jpg
+2026-05-21T17:58:50,product_3,UNCERTAIN,UNCERTAIN,NOT OK,7.9,24.96,21.30,0,2,8,decision_change,
+2026-05-21T17:58:50,product_3,UNCERTAIN,UNCERTAIN,NOT OK,7.9,24.96,21.30,0,2,8,image_saved,products\product_3\outputs\live_product_3_20260521_175850_949406.jpg
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.1,24.27,20.65,0,3,7,decision_change,
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.0,24.26,20.65,0,5,5,image_saved,products\product_3\outputs\live_product_3_20260521_175851_128290.jpg
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.1,24.31,20.65,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175851_338083.jpg
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.1,24.38,20.71,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175851_529096.jpg
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.1,24.34,20.67,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175851_720177.jpg
+2026-05-21T17:58:51,product_3,NOT OK,NOT OK,NOT OK,8.1,24.60,20.93,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175851_928532.jpg
+2026-05-21T17:58:52,product_3,NOT OK,NOT OK,NOT OK,8.1,24.44,20.78,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175852_121096.jpg
+2026-05-21T17:58:52,product_3,NOT OK,NOT OK,NOT OK,8.1,24.32,20.68,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175852_277393.jpg
+2026-05-21T17:58:52,product_3,NOT OK,NOT OK,NOT OK,8.1,24.47,20.82,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175852_482519.jpg
+2026-05-21T17:58:52,product_3,NOT OK,NOT OK,NOT OK,8.2,24.31,20.63,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175852_712403.jpg
+2026-05-21T17:58:52,product_3,NOT OK,NOT OK,NOT OK,8.1,24.28,20.62,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175852_886791.jpg
+2026-05-21T17:58:53,product_3,NOT OK,NOT OK,NOT OK,8.3,24.18,20.49,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175853_074199.jpg
+2026-05-21T17:58:53,product_3,NOT OK,NOT OK,NOT OK,8.2,24.30,20.63,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175853_304175.jpg
+2026-05-21T17:58:53,product_3,NOT OK,NOT OK,NOT OK,8.2,24.32,20.62,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175853_479230.jpg
+2026-05-21T17:58:54,product_3,NOT OK,NOT OK,NOT OK,8.3,24.43,20.70,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175854_045746.jpg
+2026-05-21T17:58:54,product_3,NOT OK,NOT OK,NOT OK,8.2,24.39,20.69,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175854_240791.jpg
+2026-05-21T17:58:54,product_3,NOT OK,NOT OK,NOT OK,8.2,24.42,20.73,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175854_458434.jpg
+2026-05-21T17:58:54,product_3,NOT OK,NOT OK,NOT OK,8.2,24.50,20.77,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175854_652518.jpg
+2026-05-21T17:58:54,product_3,NOT OK,NOT OK,NOT OK,8.2,24.45,20.75,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175854_905134.jpg
+2026-05-21T17:58:55,product_3,NOT OK,NOT OK,NOT OK,8.1,24.48,20.80,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175855_056148.jpg
+2026-05-21T17:58:55,product_3,NOT OK,NOT OK,NOT OK,8.2,24.51,20.79,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175855_289578.jpg
+2026-05-21T17:58:55,product_3,NOT OK,NOT OK,NOT OK,8.2,24.50,20.78,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175855_467384.jpg
+2026-05-21T17:58:55,product_3,NOT OK,NOT OK,NOT OK,8.2,24.39,20.69,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175855_702584.jpg
+2026-05-21T17:58:55,product_3,NOT OK,NOT OK,NOT OK,8.2,24.44,20.74,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175855_897882.jpg
+2026-05-21T17:58:56,product_3,NOT OK,NOT OK,NOT OK,8.3,24.47,20.74,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175856_089084.jpg
+2026-05-21T17:58:56,product_3,NOT OK,NOT OK,NOT OK,8.2,24.45,20.73,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175856_281446.jpg
+2026-05-21T17:58:56,product_3,NOT OK,NOT OK,NOT OK,8.2,24.62,20.89,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175856_498687.jpg
+2026-05-21T17:58:56,product_3,NOT OK,NOT OK,NOT OK,8.2,24.70,20.98,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175856_691788.jpg
+2026-05-21T17:58:56,product_3,NOT OK,NOT OK,NOT OK,8.1,24.71,20.99,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175856_901192.jpg
+2026-05-21T17:58:57,product_3,NOT OK,NOT OK,NOT OK,8.3,24.73,20.93,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175857_104245.jpg
+2026-05-21T17:58:57,product_3,NOT OK,NOT OK,NOT OK,8.2,24.64,20.91,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175857_336543.jpg
+2026-05-21T17:58:57,product_3,NOT OK,NOT OK,NOT OK,8.2,24.61,20.88,0,10,0,image_saved,products\product_3\outputs\live_product_3_20260521_175857_507553.jpg

@@ -1,4 +1,5 @@
 import argparse
+import csv
 import os
 from datetime import datetime
 
@@ -9,6 +10,22 @@ import inspect_images
 
 SMOOTHING_WINDOW = 10
 STABLE_REQUIRED_COUNT = 6
+LOG_FILE_NAME = "inspection_log.csv"
+LOG_FIELDS = [
+    "timestamp",
+    "product",
+    "stable_decision",
+    "frame_decision",
+    "prediction",
+    "confidence_percent",
+    "ok_distance",
+    "ng_distance",
+    "history_ok",
+    "history_ng",
+    "history_uncertain",
+    "event",
+    "image_path",
+]
 
 
 def parse_args():
@@ -60,6 +77,51 @@ def save_live_frame(image, product_name):
     output_path = os.path.join(inspect_images.OUTPUT_DIR, filename)
     cv2.imwrite(output_path, image)
     print(f"Saved live frame: {output_path}")
+    return output_path
+
+
+def append_inspection_log(row):
+    log_path = os.path.join(inspect_images.OUTPUT_DIR, LOG_FILE_NAME)
+    file_exists = os.path.exists(log_path)
+
+    with open(log_path, "a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=LOG_FIELDS)
+
+        if not file_exists:
+            writer.writeheader()
+
+        writer.writerow(row)
+
+
+def build_log_row(
+    product_name,
+    stable_decision,
+    frame_decision,
+    prediction,
+    confidence,
+    ok_distance,
+    ng_distance,
+    ok_count,
+    ng_count,
+    uncertain_count,
+    event,
+    image_path="",
+):
+    return {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "product": product_name,
+        "stable_decision": stable_decision,
+        "frame_decision": frame_decision,
+        "prediction": prediction,
+        "confidence_percent": f"{confidence * 100:.1f}",
+        "ok_distance": f"{ok_distance:.2f}",
+        "ng_distance": f"{ng_distance:.2f}",
+        "history_ok": ok_count,
+        "history_ng": ng_count,
+        "history_uncertain": uncertain_count,
+        "event": event,
+        "image_path": image_path,
+    }
 
 
 def main():
@@ -82,6 +144,7 @@ def main():
     print("Realtime controls:")
     print("Press 's' to save current annotated frame")
     print("Press 'q' to quit")
+    print(f"Inspection log: {os.path.join(inspect_images.OUTPUT_DIR, LOG_FILE_NAME)}")
     print(
         f"Smoothing: last {SMOOTHING_WINDOW} frames, "
         f"{STABLE_REQUIRED_COUNT} matching frames required, "
@@ -138,6 +201,21 @@ def main():
                 f"Confidence={confidence * 100:.1f}%, "
                 f"History OK={ok_count}, NG={ng_count}, UNC={uncertain_count}"
             )
+            append_inspection_log(
+                build_log_row(
+                    args.product,
+                    stable_decision,
+                    frame_decision,
+                    prediction,
+                    confidence,
+                    ok_distance,
+                    ng_distance,
+                    ok_count,
+                    ng_count,
+                    uncertain_count,
+                    event="decision_change",
+                )
+            )
             last_stable_decision = stable_decision
 
         cv2.imshow("Realtime Vision Inspection", annotated)
@@ -145,7 +223,23 @@ def main():
         key = cv2.waitKey(1) & 0xFF
 
         if key == ord("s"):
-            save_live_frame(annotated, args.product)
+            image_path = save_live_frame(annotated, args.product)
+            append_inspection_log(
+                build_log_row(
+                    args.product,
+                    stable_decision,
+                    frame_decision,
+                    prediction,
+                    confidence,
+                    ok_distance,
+                    ng_distance,
+                    ok_count,
+                    ng_count,
+                    uncertain_count,
+                    event="image_saved",
+                    image_path=image_path,
+                )
+            )
         elif key == ord("q"):
             break
 

@@ -46,6 +46,7 @@ Use a separate product folder for each product/SKU because each product may need
 capture_dataset.py   Capture training images from camera
 inspect_images.py    Train, evaluate, test, and save annotated outputs
 live_inspection.py   Run realtime camera inspection
+generate_report.py   Summarize realtime inspection CSV logs
 ```
 
 ## Capture Training Images
@@ -122,6 +123,26 @@ Realtime controls:
 ```text
 s = save current annotated frame to the product outputs folder
 q = quit
+```
+
+Realtime inspection writes a CSV log in the product outputs folder:
+
+```text
+products/<product>/outputs/inspection_log.csv
+```
+
+The log records decision changes and saved live frames with timestamp, product, stable decision, frame decision, confidence, distances, smoothing history counts, and image path when available.
+
+Generate a simple report from the log:
+
+```powershell
+python generate_report.py --product product_3
+```
+
+The report is also saved to:
+
+```text
+products/<product>/outputs/inspection_report.txt
 ```
 
 Realtime inspection uses simple smoothing:
