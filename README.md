@@ -16,25 +16,26 @@ Each product has its own recipe folder:
 
 ```text
 products/
-├── product_1/
-│   ├── dataset/
-│   │   ├── ok/
-│   │   ├── ng/
-│   │   └── rejected/
-│   │       ├── ok/
-│   │       ├── ng/
-│   │       └── test/
-│   ├── test/
-│   ├── outputs/
-│   └── roi.json
-│
-└── product_2/
-    ├── dataset/
-    │   ├── ok/
-    │   ├── ng/
-    │   └── rejected/
-    ├── test/
-    └── outputs/
+|-- product_1/
+|   |-- dataset/
+|   |   |-- ok/
+|   |   |-- ng/
+|   |   `-- rejected/
+|   |       |-- ok/
+|   |       |-- ng/
+|   |       `-- test/
+|   |-- test/
+|   |-- outputs/
+|   `-- roi.json
+|
+`-- product_2/
+    |-- dataset/
+    |   |-- ok/
+    |   |-- ng/
+    |   `-- rejected/
+    |-- test/
+    |-- outputs/
+    `-- roi.json
 ```
 
 Use a separate product folder for each product/SKU because each product may need a different ROI, camera position, and inspection model.
@@ -44,6 +45,7 @@ Use a separate product folder for each product/SKU because each product may need
 ```text
 capture_dataset.py   Capture training images from camera
 inspect_images.py    Train, evaluate, test, and save annotated outputs
+live_inspection.py   Run realtime camera inspection
 ```
 
 ## Capture Training Images
@@ -94,6 +96,44 @@ Set ROI manually:
 python inspect_images.py --product product_1 --roi X Y W H
 ```
 
+## Realtime Inspection
+
+After the product has enough OK/NG training images and a saved ROI, run live inspection from the camera:
+
+```powershell
+python live_inspection.py --product product_1
+```
+
+For another product:
+
+```powershell
+python live_inspection.py --product product_2
+```
+
+If the wrong camera opens, change the camera index:
+
+```powershell
+python live_inspection.py --product product_1 --camera 1
+```
+
+Realtime controls:
+
+```text
+s = save current annotated frame to the product outputs folder
+q = quit
+```
+
+Realtime inspection uses simple smoothing:
+
+```text
+Last 10 frames are checked.
+If 7 or more frames are OK, final stable decision = OK.
+If 7 or more frames are NOT OK, final stable decision = NOT OK.
+Otherwise, final stable decision = UNCERTAIN.
+```
+
+For reliable realtime inspection, keep the camera fixed, keep the lighting stable, and place the product in the same position used when the ROI was selected.
+
 ## Workflow
 
 1. Place or capture OK training images in:
@@ -120,13 +160,19 @@ products/product_1/test
 python inspect_images.py --product product_1 --reset-roi
 ```
 
-5. Run inspection:
+5. Run image inspection:
 
 ```powershell
 python inspect_images.py --product product_1
 ```
 
-6. Review annotated outputs in:
+6. Run realtime inspection:
+
+```powershell
+python live_inspection.py --product product_1
+```
+
+7. Review annotated outputs in:
 
 ```text
 products/product_1/outputs
@@ -155,7 +201,7 @@ Reject images when:
 
 ## Output Meaning
 
-The script prints both prediction and final decision.
+The scripts print both prediction and final decision.
 
 ```text
 Prediction = raw model output
@@ -180,6 +226,7 @@ Low-confidence results are marked `UNCERTAIN` instead of forcing an OK/NOT OK de
 - Camera position, lighting, and product placement are critical.
 - More images help only if they are clean and consistently aligned.
 - Bad images should be moved to `rejected`, not kept in active training folders.
+- Realtime inspection depends on a fixed camera, fixed lighting, and repeatable product placement.
 
 ## Current Product Status
 
