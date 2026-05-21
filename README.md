@@ -1,14 +1,28 @@
 # Vision Inspection MVP
 
-Small OpenCV-based vision inspection MVP for checking whether a product passes a simple OK/NG condition.
+Lightweight Python/OpenCV vision inspection MVP for product quality checking.
 
-Current validated use case:
+The system supports product-wise inspection recipes, ROI-based image inspection, realtime camera inspection, confidence handling, CSV logging, and QMS-style report generation.
 
-- Bottle with cap = `OK`
-- Bottle without cap = `NOT OK`
-- Low-confidence result = `UNCERTAIN`
+It uses classical computer vision features and a lightweight classifier. It does not use deep learning.
 
-The project uses classical computer vision features and a lightweight classifier. It does not use deep learning.
+## Main Demo
+
+Current main demo product:
+
+```text
+product_3
+```
+
+Current demo use case:
+
+```text
+OK         = product is not broken
+NOT OK     = product is broken/damaged
+UNCERTAIN  = confidence is too low; review or recapture needed
+```
+
+`product_1` and `product_2` are kept as examples of multi-product support. Do not mix images between products.
 
 ## Folder Structure
 
@@ -17,105 +31,50 @@ Each product has its own recipe folder:
 ```text
 products/
 |-- product_1/
-|   |-- dataset/
-|   |   |-- ok/
-|   |   |-- ng/
-|   |   `-- rejected/
-|   |       |-- ok/
-|   |       |-- ng/
-|   |       `-- test/
-|   |-- test/
-|   |-- outputs/
-|   `-- roi.json
-|
-`-- product_2/
+|-- product_2/
+`-- product_3/
     |-- dataset/
     |   |-- ok/
     |   |-- ng/
     |   `-- rejected/
+    |       |-- ok/
+    |       |-- ng/
+    |       `-- test/
     |-- test/
     |-- outputs/
     `-- roi.json
 ```
 
-Use a separate product folder for each product/SKU because each product may need a different ROI, camera position, and inspection model.
+Each product can have a different ROI, dataset, outputs, and inspection behavior.
 
 ## Main Scripts
 
 ```text
-capture_dataset.py   Capture training images from camera
+capture_dataset.py   Capture OK, NOT OK, and test images from camera
 inspect_images.py    Train, evaluate, test, and save annotated outputs
-live_inspection.py   Run realtime camera inspection
+live_inspection.py   Run realtime camera inspection with smoothing and logging
 generate_report.py   Summarize realtime inspection CSV logs
 ```
 
-## Capture Training Images
+## Demo Flow
 
-Capture for product 1:
-
-```powershell
-python capture_dataset.py --product product_1
-```
-
-Capture for product 2:
+Use this flow for `product_3`:
 
 ```powershell
-python capture_dataset.py --product product_2
+python capture_dataset.py --product product_3
+python inspect_images.py --product product_3 --reset-roi
+python inspect_images.py --product product_3
+python live_inspection.py --product product_3
+python generate_report.py --product product_3
 ```
 
-Controls:
+Capture controls:
 
 ```text
 o = save training OK image
 n = save training NOT OK image
 t = save test image
 q = quit
-```
-
-## Inspect Images
-
-Run product 1:
-
-```powershell
-python inspect_images.py --product product_1
-```
-
-Run product 2:
-
-```powershell
-python inspect_images.py --product product_2
-```
-
-Select/reset ROI:
-
-```powershell
-python inspect_images.py --product product_1 --reset-roi
-```
-
-Set ROI manually:
-
-```powershell
-python inspect_images.py --product product_1 --roi X Y W H
-```
-
-## Realtime Inspection
-
-After the product has enough OK/NG training images and a saved ROI, run live inspection from the camera:
-
-```powershell
-python live_inspection.py --product product_1
-```
-
-For another product:
-
-```powershell
-python live_inspection.py --product product_2
-```
-
-If the wrong camera opens, change the camera index:
-
-```powershell
-python live_inspection.py --product product_1 --camera 1
 ```
 
 Realtime controls:
@@ -125,24 +84,44 @@ s = save current annotated frame to the product outputs folder
 q = quit
 ```
 
-Realtime inspection writes a CSV log in the product outputs folder:
+## Image Inspection
 
-```text
-products/<product>/outputs/inspection_log.csv
-```
-
-The log records decision changes and saved live frames with timestamp, product, stable decision, frame decision, confidence, distances, smoothing history counts, and image path when available.
-
-Generate a simple report from the log:
+Run image-based inspection:
 
 ```powershell
-python generate_report.py --product product_3
+python inspect_images.py --product product_3
 ```
 
-The report is also saved to:
+Select or reset ROI:
+
+```powershell
+python inspect_images.py --product product_3 --reset-roi
+```
+
+Set ROI manually:
+
+```powershell
+python inspect_images.py --product product_3 --roi X Y W H
+```
+
+Image inspection saves annotated output images in:
 
 ```text
-products/<product>/outputs/inspection_report.txt
+products/product_3/outputs
+```
+
+## Realtime Inspection
+
+Run realtime inspection:
+
+```powershell
+python live_inspection.py --product product_3
+```
+
+If the wrong camera opens, change the camera index:
+
+```powershell
+python live_inspection.py --product product_3 --camera 1
 ```
 
 Realtime inspection uses simple smoothing:
@@ -155,51 +134,58 @@ If confident frames agree and the rest are UNCERTAIN, the confident result is us
 Otherwise, final stable decision = UNCERTAIN.
 ```
 
-For reliable realtime inspection, keep the camera fixed, keep the lighting stable, and place the product in the same position used when the ROI was selected.
+The current low-confidence threshold is 8%.
 
-## Workflow
+## Logs And Reports
 
-1. Place or capture OK training images in:
-
-```text
-products/product_1/dataset/ok
-```
-
-2. Place or capture NOT OK training images in:
+Realtime inspection writes a CSV log:
 
 ```text
-products/product_1/dataset/ng
+products/product_3/outputs/inspection_log.csv
 ```
 
-3. Place separate test images in:
+The log records:
 
 ```text
-products/product_1/test
+timestamp
+product
+stable decision
+frame decision
+prediction
+confidence
+OK/NG distance values
+smoothing history counts
+event type
+saved image path
 ```
 
-4. Select ROI around the inspection area:
+Generate a report:
 
 ```powershell
-python inspect_images.py --product product_1 --reset-roi
+python generate_report.py --product product_3
 ```
 
-5. Run image inspection:
-
-```powershell
-python inspect_images.py --product product_1
-```
-
-6. Run realtime inspection:
-
-```powershell
-python live_inspection.py --product product_1
-```
-
-7. Review annotated outputs in:
+The report is saved to:
 
 ```text
-products/product_1/outputs
+products/product_3/outputs/inspection_report.txt
 ```
+
+## Current Product 3 Status
+
+For the current captured `product_3` dataset:
+
+```text
+Image inspection completed successfully.
+Train/test separation check passed.
+35 separate test images were evaluated.
+Test output summary: 15 OK, 20 NOT OK, 0 UNCERTAIN.
+Realtime inspection works for MVP demo under controlled setup.
+CSV inspection logging works.
+Text report generation works.
+```
+
+Training accuracy is useful for debugging, but it is not production accuracy.
 
 ## Rejected Images
 
@@ -208,54 +194,38 @@ Do not delete bad images. Move them into the rejected folder so they are preserv
 Examples:
 
 ```text
-products/product_1/dataset/rejected/ok
-products/product_1/dataset/rejected/ng
-products/product_1/dataset/rejected/test
+products/product_3/dataset/rejected/ok
+products/product_3/dataset/rejected/ng
+products/product_3/dataset/rejected/test
 ```
 
 Reject images when:
 
-- ROI is not on the cap/mouth/inspection area
+- ROI is not on the inspection area
 - image is blurry
 - lighting is poor
 - camera angle is inconsistent
 - product is not positioned correctly
 - test image is copied from training data
 
-## Output Meaning
+## Limitations
 
-The scripts print both prediction and final decision.
+- The ROI is fixed; the product must be placed under the same ROI during live inspection.
+- The camera and product position must stay fixed.
+- Lighting must be stable.
+- Laptop camera quality can cause low-confidence frames.
+- `UNCERTAIN` is expected when the image is unclear.
+- This is an MVP, not a production-certified quality system.
 
-```text
-Prediction = raw model output
-Decision   = final factory-style decision
-```
+## Future Roadmap
 
-Decision values:
+Useful future improvements:
 
-```text
-OK         Product passed inspection
-NOT OK     Product failed inspection
-UNCERTAIN  Confidence is too low; manual review or recapture needed
-```
-
-Low-confidence results are marked `UNCERTAIN` instead of forcing an OK/NOT OK decision.
-The current low-confidence threshold is 8%.
-
-## Important Notes
-
-- Training accuracy alone is not production accuracy.
-- Test images must be separate from training images.
-- The bottle/product must stay in the same position for ROI-based inspection.
-- Camera position, lighting, and product placement are critical.
-- More images help only if they are clean and consistently aligned.
-- Bad images should be moved to `rejected`, not kept in active training folders.
-- Realtime inspection depends on a fixed camera, fixed lighting, and repeatable product placement.
-
-## Current Product Status
-
-`product_1` contains the current bottle cap inspection dataset and ROI.
-
-`product_2` is ready for a second product. Capture its own OK/NG images, select its own ROI, and evaluate it separately.
-
-`product_3` is ready for the next new product. Use it when the previous product is no longer available.
+- Store inspection logs in a database.
+- Add batch, shift, operator, and line information.
+- Build a dashboard for OK/NG trends and rejection percentage.
+- Add user review workflow for `UNCERTAIN` results.
+- Integrate industrial camera and controlled lighting.
+- Add PLC/SCADA/MES integration.
+- Evaluate classical ML models such as SVM, Random Forest, or Logistic Regression.
+- Consider deep learning later only if ROI/OpenCV inspection is not enough.
