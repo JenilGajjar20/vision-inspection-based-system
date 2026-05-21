@@ -8,7 +8,7 @@ import inspect_images
 
 
 SMOOTHING_WINDOW = 10
-STABLE_REQUIRED_COUNT = 7
+STABLE_REQUIRED_COUNT = 6
 
 
 def parse_args():
@@ -35,11 +35,20 @@ def parse_args():
 def get_stable_decision(decision_history):
     ok_count = decision_history.count("OK")
     ng_count = decision_history.count("NOT OK")
+    confident_count = ok_count + ng_count
 
     if ok_count >= STABLE_REQUIRED_COUNT:
         return "OK"
 
     if ng_count >= STABLE_REQUIRED_COUNT:
+        return "NOT OK"
+
+    # If uncertain frames are mixed in, trust the confident frames only
+    # when every confident frame agrees on the same result.
+    if confident_count >= 3 and ng_count == 0:
+        return "OK"
+
+    if confident_count >= 3 and ok_count == 0:
         return "NOT OK"
 
     return inspect_images.UNCERTAIN_LABEL
@@ -75,7 +84,8 @@ def main():
     print("Press 'q' to quit")
     print(
         f"Smoothing: last {SMOOTHING_WINDOW} frames, "
-        f"{STABLE_REQUIRED_COUNT} matching frames required"
+        f"{STABLE_REQUIRED_COUNT} matching frames required, "
+        "uncertain frames ignored when confident frames agree"
     )
 
     decision_history = []

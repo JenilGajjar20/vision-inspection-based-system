@@ -23,9 +23,11 @@ args = parse_args()
 product_root = os.path.join(PRODUCTS_DIR, args.product)
 OK_DIR = os.path.join(product_root, "dataset", "ok")
 NG_DIR = os.path.join(product_root, "dataset", "ng")
+TEST_DIR = os.path.join(product_root, "test")
 
 os.makedirs(OK_DIR, exist_ok=True)
 os.makedirs(NG_DIR, exist_ok=True)
+os.makedirs(TEST_DIR, exist_ok=True)
 
 print(f"Capturing for product: {args.product} ({product_root})")
 
@@ -35,8 +37,9 @@ if not camera.isOpened():
     raise Exception("Could not open camera")
 
 print("Controls:")
-print("Press 'o' to save OK image")
-print("Press 'n' to save NOT OK image")
+print("Press 'o' to save training OK image")
+print("Press 'n' to save training NOT OK image")
+print("Press 't' to save test image")
 print("Press 'q' to quit")
 
 while True:
@@ -61,6 +64,11 @@ while True:
         path = os.path.join(NG_DIR, f"ng_{timestamp}.jpg")
         cv2.imwrite(path, frame)
         print(f"Saved NG image: {path}")
+
+    elif key == ord("t"):
+        test_path = os.path.join(TEST_DIR, f"test_{timestamp}.jpg")
+        cv2.imwrite(test_path, frame)
+        print(f"Saved test image: {test_path}")
 
     elif key == ord("q"):
         break

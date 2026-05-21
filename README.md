@@ -65,8 +65,9 @@ python capture_dataset.py --product product_2
 Controls:
 
 ```text
-o = save OK image
-n = save NOT OK image
+o = save training OK image
+n = save training NOT OK image
+t = save test image
 q = quit
 ```
 
@@ -127,8 +128,9 @@ Realtime inspection uses simple smoothing:
 
 ```text
 Last 10 frames are checked.
-If 7 or more frames are OK, final stable decision = OK.
-If 7 or more frames are NOT OK, final stable decision = NOT OK.
+If 6 or more frames are OK, final stable decision = OK.
+If 6 or more frames are NOT OK, final stable decision = NOT OK.
+If confident frames agree and the rest are UNCERTAIN, the confident result is used.
 Otherwise, final stable decision = UNCERTAIN.
 ```
 
@@ -217,6 +219,7 @@ UNCERTAIN  Confidence is too low; manual review or recapture needed
 ```
 
 Low-confidence results are marked `UNCERTAIN` instead of forcing an OK/NOT OK decision.
+The current low-confidence threshold is 8%.
 
 ## Important Notes
 
@@ -233,3 +236,5 @@ Low-confidence results are marked `UNCERTAIN` instead of forcing an OK/NOT OK de
 `product_1` contains the current bottle cap inspection dataset and ROI.
 
 `product_2` is ready for a second product. Capture its own OK/NG images, select its own ROI, and evaluate it separately.
+
+`product_3` is ready for the next new product. Use it when the previous product is no longer available.
