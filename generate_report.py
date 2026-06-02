@@ -1,5 +1,6 @@
 import argparse
 import csv
+import html
 import os
 from collections import Counter
 
@@ -8,6 +9,7 @@ PRODUCTS_DIR = "products"
 DEFAULT_PRODUCT = "product_1"
 LOG_FILE_NAME = "inspection_log.csv"
 REPORT_FILE_NAME = "inspection_report.txt"
+HTML_REPORT_FILE_NAME = "inspection_report.html"
 
 
 def parse_args():
@@ -96,10 +98,193 @@ def build_report_lines(product_name, rows, recent_count):
     return lines
 
 
+def summarize_rows(rows):
+    decision_counts = Counter(row["stable_decision"] for row in rows)
+    event_counts = Counter(row["event"] for row in rows)
+    decision_change_rows = [
+        row for row in rows if row["event"] == "decision_change"
+    ]
+    saved_image_rows = [
+        row for row in rows if row["event"] == "image_saved"
+    ]
+    total_rows = len(rows)
+
+    return {
+        "total_rows": total_rows,
+        "decision_changes": len(decision_change_rows),
+        "saved_images": len(saved_image_rows),
+        "ok_count": decision_counts["OK"],
+        "ng_count": decision_counts["NOT OK"],
+        "uncertain_count": decision_counts["UNCERTAIN"],
+        "reject_percent": percent(decision_counts["NOT OK"], total_rows),
+        "uncertain_percent": percent(decision_counts["UNCERTAIN"], total_rows),
+        "event_counts": event_counts,
+    }
+
+
+def badge_class(decision):
+    if decision == "OK":
+        return "ok"
+
+    if decision == "NOT OK":
+        return "ng"
+
+    return "uncertain"
+
+
+def build_html_report(product_name, rows, recent_count):
+    summary = summarize_rows(rows)
+    recent_rows = rows[-recent_count:] if rows else []
+    event_items = "\n".join(
+        f"<li><strong>{html.escape(event)}:</strong> {count}</li>"
+        for event, count in summary["event_counts"].items()
+    )
+    recent_table_rows = []
+
+    for row in recent_rows:
+        decision = row["stable_decision"]
+        image_path = row["image_path"] if row["image_path"] else "-"
+        recent_table_rows.append(
+            "<tr>"
+            f"<td>{html.escape(row['timestamp'])}</td>"
+            f"<td><span class=\"badge {badge_class(decision)}\">{html.escape(decision)}</span></td>"
+            f"<td>{html.escape(row['frame_decision'])}</td>"
+            f"<td>{html.escape(row['confidence_percent'])}%</td>"
+            f"<td>{html.escape(row['event'])}</td>"
+            f"<td>{html.escape(image_path)}</td>"
+            "</tr>"
+        )
+
+    recent_rows_html = "\n".join(recent_table_rows)
+
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inspection Report - {html.escape(product_name)}</title>
+  <style>
+    body {{
+      margin: 32px;
+      color: #1f2933;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }}
+    h1, h2 {{
+      color: #102a43;
+    }}
+    .cards {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }}
+    .card {{
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+      border-radius: 6px;
+      padding: 14px;
+    }}
+    .label {{
+      color: #52606d;
+      font-size: 12px;
+      text-transform: uppercase;
+    }}
+    .value {{
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 6px;
+    }}
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+    }}
+    th, td {{
+      border-bottom: 1px solid #d9e2ec;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }}
+    th {{
+      background: #e4e7eb;
+    }}
+    .badge {{
+      border-radius: 999px;
+      display: inline-block;
+      font-weight: 700;
+      padding: 4px 10px;
+    }}
+    .ok {{
+      background: #d9f9e6;
+      color: #0b6b35;
+    }}
+    .ng {{
+      background: #ffe3e3;
+      color: #b42318;
+    }}
+    .uncertain {{
+      background: #fff3c4;
+      color: #7c5e10;
+    }}
+    .note {{
+      color: #52606d;
+      font-size: 13px;
+    }}
+  </style>
+</head>
+<body>
+  <h1>Inspection Report</h1>
+  <p><strong>Product:</strong> {html.escape(product_name)}</p>
+  <p class="note">Generated from realtime inspection log data.</p>
+
+  <div class="cards">
+    <div class="card"><div class="label">Total rows</div><div class="value">{summary['total_rows']}</div></div>
+    <div class="card"><div class="label">Decision changes</div><div class="value">{summary['decision_changes']}</div></div>
+    <div class="card"><div class="label">Saved images</div><div class="value">{summary['saved_images']}</div></div>
+    <div class="card"><div class="label">OK</div><div class="value">{summary['ok_count']}</div></div>
+    <div class="card"><div class="label">NOT OK</div><div class="value">{summary['ng_count']}</div></div>
+    <div class="card"><div class="label">UNCERTAIN</div><div class="value">{summary['uncertain_count']}</div></div>
+    <div class="card"><div class="label">Reject %</div><div class="value">{summary['reject_percent']:.1f}%</div></div>
+    <div class="card"><div class="label">Uncertain %</div><div class="value">{summary['uncertain_percent']:.1f}%</div></div>
+  </div>
+
+  <h2>Event Summary</h2>
+  <ul>
+    {event_items}
+  </ul>
+
+  <h2>Recent {min(recent_count, len(rows))} Log Rows</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Stable Decision</th>
+        <th>Frame Decision</th>
+        <th>Confidence</th>
+        <th>Event</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      {recent_rows_html}
+    </tbody>
+  </table>
+</body>
+</html>
+"""
+
+
 def save_report(report_path, lines):
     with open(report_path, "w") as file:
         file.write("\n".join(lines))
         file.write("\n")
+
+
+def save_html_report(report_path, html_report):
+    with open(report_path, "w", encoding="utf-8") as file:
+        file.write(html_report)
 
 
 def main():
@@ -110,13 +295,17 @@ def main():
         LOG_FILE_NAME
     )
     report_path = os.path.join(output_dir, REPORT_FILE_NAME)
+    html_report_path = os.path.join(output_dir, HTML_REPORT_FILE_NAME)
 
     rows = read_log_rows(log_path)
     report_lines = build_report_lines(args.product, rows, args.recent)
+    html_report = build_html_report(args.product, rows, args.recent)
     print("\n".join(report_lines))
     save_report(report_path, report_lines)
+    save_html_report(html_report_path, html_report)
     print()
     print(f"Report saved: {report_path}")
+    print(f"HTML report saved: {html_report_path}")
 
 
 if __name__ == "__main__":

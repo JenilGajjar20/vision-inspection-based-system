@@ -17,14 +17,7 @@ Event Summary:
 decision_change: 14
 image_saved: 63
 
-Recent 10 Log Rows:
-2026-05-21T17:58:55 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175855_702584.jpg
-2026-05-21T17:58:55 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175855_897882.jpg
-2026-05-21T17:58:56 | Decision=NOT OK | Confidence=8.3% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175856_089084.jpg
-2026-05-21T17:58:56 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175856_281446.jpg
-2026-05-21T17:58:56 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175856_498687.jpg
-2026-05-21T17:58:56 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175856_691788.jpg
-2026-05-21T17:58:56 | Decision=NOT OK | Confidence=8.1% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175856_901192.jpg
+Recent 3 Log Rows:
 2026-05-21T17:58:57 | Decision=NOT OK | Confidence=8.3% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175857_104245.jpg
 2026-05-21T17:58:57 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175857_336543.jpg
 2026-05-21T17:58:57 | Decision=NOT OK | Confidence=8.2% | Event=image_saved | Image=products\product_3\outputs\live_product_3_20260521_175857_507553.jpg

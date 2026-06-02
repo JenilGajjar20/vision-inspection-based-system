@@ -56,6 +56,14 @@ live_inspection.py   Run realtime camera inspection with smoothing and logging
 generate_report.py   Summarize realtime inspection CSV logs
 ```
 
+## Setup
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
 ## Demo Flow
 
 Use this flow for `product_3`:
@@ -169,6 +177,7 @@ The report is saved to:
 
 ```text
 products/product_3/outputs/inspection_report.txt
+products/product_3/outputs/inspection_report.html
 ```
 
 ## Current Product 3 Status
@@ -182,7 +191,7 @@ Train/test separation check passed.
 Test output summary: 15 OK, 20 NOT OK, 0 UNCERTAIN.
 Realtime inspection works for MVP demo under controlled setup.
 CSV inspection logging works.
-Text report generation works.
+Text and HTML report generation works.
 ```
 
 Training accuracy is useful for debugging, but it is not production accuracy.
@@ -221,6 +230,7 @@ Reject images when:
 
 Useful future improvements:
 
+- Add product recipe/config files for per-product thresholds and smoothing settings.
 - Store inspection logs in a database.
 - Add batch, shift, operator, and line information.
 - Build a dashboard for OK/NG trends and rejection percentage.

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inspection Report - product_3</title>
+  <style>
+    body {
+      margin: 32px;
+      color: #1f2933;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }
+    h1, h2 {
+      color: #102a43;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .label {
+      color: #52606d;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+    }
+    th, td {
+      border-bottom: 1px solid #d9e2ec;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    th {
+      background: #e4e7eb;
+    }
+    .badge {
+      border-radius: 999px;
+      display: inline-block;
+      font-weight: 700;
+      padding: 4px 10px;
+    }
+    .ok {
+      background: #d9f9e6;
+      color: #0b6b35;
+    }
+    .ng {
+      background: #ffe3e3;
+      color: #b42318;
+    }
+    .uncertain {
+      background: #fff3c4;
+      color: #7c5e10;
+    }
+    .note {
+      color: #52606d;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Inspection Report</h1>
+  <p><strong>Product:</strong> product_3</p>
+  <p class="note">Generated from realtime inspection log data.</p>
+
+  <div class="cards">
+    <div class="card"><div class="label">Total rows</div><div class="value">77</div></div>
+    <div class="card"><div class="label">Decision changes</div><div class="value">14</div></div>
+    <div class="card"><div class="label">Saved images</div><div class="value">63</div></div>
+    <div class="card"><div class="label">OK</div><div class="value">24</div></div>
+    <div class="card"><div class="label">NOT OK</div><div class="value">45</div></div>
+    <div class="card"><div class="label">UNCERTAIN</div><div class="value">8</div></div>
+    <div class="card"><div class="label">Reject %</div><div class="value">58.4%</div></div>
+    <div class="card"><div class="label">Uncertain %</div><div class="value">10.4%</div></div>
+  </div>
+
+  <h2>Event Summary</h2>
+  <ul>
+    <li><strong>decision_change:</strong> 14</li>
+<li><strong>image_saved:</strong> 63</li>
+  </ul>
+
+  <h2>Recent 3 Log Rows</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Stable Decision</th>
+        <th>Frame Decision</th>
+        <th>Confidence</th>
+        <th>Event</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2026-05-21T17:58:57</td><td><span class="badge ng">NOT OK</span></td><td>NOT OK</td><td>8.3%</td><td>image_saved</td><td>products\product_3\outputs\live_product_3_20260521_175857_104245.jpg</td></tr>
+<tr><td>2026-05-21T17:58:57</td><td><span class="badge ng">NOT OK</span></td><td>NOT OK</td><td>8.2%</td><td>image_saved</td><td>products\product_3\outputs\live_product_3_20260521_175857_336543.jpg</td></tr>
+<tr><td>2026-05-21T17:58:57</td><td><span class="badge ng">NOT OK</span></td><td>NOT OK</td><td>8.2%</td><td>image_saved</td><td>products\product_3\outputs\live_product_3_20260521_175857_507553.jpg</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
