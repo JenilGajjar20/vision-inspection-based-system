@@ -19,6 +19,12 @@ Phase 1 covers the MVP workflow:
 6. Generate inspection reports
 ```
 
+Phase 1 details are documented in:
+
+```text
+docs/phase_1_summary.md
+```
+
 ## Product Structure
 
 Each product has its own recipe folder:
