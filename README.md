@@ -75,6 +75,41 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+## Database Setup
+
+Phase 2 uses a local MySQL database.
+
+Default database name:
+
+```text
+vision_inspection_qms
+```
+
+Configure database credentials with environment variables:
+
+```powershell
+$env:DB_HOST="127.0.0.1"
+$env:DB_PORT="3306"
+$env:DB_USER="root"
+$env:DB_PASSWORD="your_password"
+$env:DB_NAME="vision_inspection_qms"
+```
+
+Initialize the database schema:
+
+```powershell
+python init_database.py
+```
+
+This creates:
+
+```text
+products
+inspection_records
+```
+
+Keep real credentials out of Git. Use `.env.example` as a reference only.
+
 ## Workflow
 
 Replace `<product_name>` with the product folder name, for example `product_3` or `product_4`.
