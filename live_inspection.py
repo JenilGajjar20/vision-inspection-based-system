@@ -34,6 +34,7 @@ def parse_args():
     )
     parser.add_argument(
         "--product",
+        type=inspect_images.validate_product_name,
         default=inspect_images.DEFAULT_PRODUCT,
         help=(
             f"Product recipe folder under {inspect_images.PRODUCTS_DIR}. "

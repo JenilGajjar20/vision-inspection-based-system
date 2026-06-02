@@ -10,6 +10,7 @@ PRODUCTS_DIR = "products"
 DEFAULT_PRODUCT = "product_1"
 LOW_CONFIDENCE_LIMIT = 0.08
 UNCERTAIN_LABEL = "UNCERTAIN"
+PRODUCT_NAME_PATTERN = r"^[a-zA-Z0-9_]+$"
 
 OK_DIR = None
 NG_DIR = None
@@ -19,6 +20,16 @@ REJECTED_OK_DIR = None
 REJECTED_NG_DIR = None
 REJECTED_TEST_DIR = None
 ROI_FILE = None
+
+
+def validate_product_name(product_name):
+    if re.match(PRODUCT_NAME_PATTERN, product_name):
+        return product_name
+
+    raise argparse.ArgumentTypeError(
+        "Invalid product name. Use only letters, numbers, and underscores. "
+        "Examples: product_4, paper_clip, metal_bracket"
+    )
 
 
 def setup_product_paths(product_name):
@@ -31,6 +42,7 @@ def setup_product_paths(product_name):
     global REJECTED_TEST_DIR
     global ROI_FILE
 
+    validate_product_name(product_name)
     product_root = os.path.join(PRODUCTS_DIR, product_name)
 
     OK_DIR = os.path.join(product_root, "dataset", "ok")
@@ -539,6 +551,7 @@ def parse_args():
     )
     parser.add_argument(
         "--product",
+        type=validate_product_name,
         default=DEFAULT_PRODUCT,
         help=f"Product recipe folder to use under {PRODUCTS_DIR}. Default: {DEFAULT_PRODUCT}."
     )
