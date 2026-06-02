@@ -46,6 +46,18 @@ products/
 
 Use a separate product folder for each product/SKU. Do not mix images between products.
 
+Product names should use only letters, numbers, and underscores.
+
+Good examples:
+
+```text
+product_4
+paper_clip
+metal_bracket
+```
+
+Avoid spaces and special characters.
+
 ## Main Scripts
 
 ```text
@@ -165,11 +177,30 @@ Generate reports:
 python generate_report.py --product <product_name>
 ```
 
+Show fewer or more recent log rows:
+
+```powershell
+python generate_report.py --product <product_name> --recent 5
+```
+
 Report outputs:
 
 ```text
 products/<product_name>/outputs/inspection_report.txt
 products/<product_name>/outputs/inspection_report.html
+```
+
+Reports include:
+
+```text
+generated timestamp
+product name
+ROI
+training image counts
+test image count
+rejected image count
+OK / NOT OK / UNCERTAIN summary
+recent inspection rows
 ```
 
 ## Decision Labels
@@ -207,6 +238,40 @@ Reject images when:
 - `UNCERTAIN` is expected when the image is unclear.
 - Training accuracy is useful for debugging, but it is not production accuracy.
 - This is an MVP, not a production-certified quality system.
+
+## Troubleshooting
+
+Camera does not open:
+
+```text
+Try a different camera index, for example: --camera 1
+Check if another application is already using the camera.
+```
+
+ROI is wrong:
+
+```text
+Run inspect_images.py with --reset-roi and select the inspection area again.
+```
+
+Too many UNCERTAIN results:
+
+```text
+Improve lighting, fix camera/product position, and keep the product inside the ROI.
+Capture cleaner OK and NOT OK images if needed.
+```
+
+inspection_log.csv is missing:
+
+```text
+Run live_inspection.py first. The log is created during realtime inspection.
+```
+
+Invalid product name:
+
+```text
+Use letters, numbers, and underscores only. Example: paper_clip
+```
 
 ## Roadmap
 

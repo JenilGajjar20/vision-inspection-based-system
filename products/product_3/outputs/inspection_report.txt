@@ -1,7 +1,7 @@
 
 Inspection Report
 -----------------
-Generated at: 2026-06-02T13:11:01
+Generated at: 2026-06-02T15:06:57
 Product: product_3
 ROI: x=137, y=182, w=350, h=275
 Log file: products\product_3\outputs\inspection_log.csv
@@ -10,6 +10,12 @@ HTML report: products\product_3\outputs\inspection_report.html
 Total log rows: 77
 Decision changes: 14
 Saved images: 63
+
+Product Folder Summary:
+OK training images: 30
+NOT OK training images: 30
+Test images: 35
+Rejected images: 0
 
 Decision Summary:
 OK: 24

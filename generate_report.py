@@ -3,6 +3,7 @@ import csv
 import html
 import json
 import os
+import re
 from collections import Counter
 from datetime import datetime
 
@@ -12,6 +13,18 @@ DEFAULT_PRODUCT = "product_1"
 LOG_FILE_NAME = "inspection_log.csv"
 REPORT_FILE_NAME = "inspection_report.txt"
 HTML_REPORT_FILE_NAME = "inspection_report.html"
+PRODUCT_NAME_PATTERN = r"^[a-zA-Z0-9_]+$"
+VALID_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"]
+
+
+def validate_product_name(product_name):
+    if re.match(PRODUCT_NAME_PATTERN, product_name):
+        return product_name
+
+    raise argparse.ArgumentTypeError(
+        "Invalid product name. Use only letters, numbers, and underscores. "
+        "Examples: product_4, paper_clip, metal_bracket"
+    )
 
 
 def parse_args():
@@ -20,6 +33,7 @@ def parse_args():
     )
     parser.add_argument(
         "--product",
+        type=validate_product_name,
         default=DEFAULT_PRODUCT,
         help=f"Product recipe folder under {PRODUCTS_DIR}. Default: {DEFAULT_PRODUCT}."
     )
@@ -58,6 +72,48 @@ def format_roi(roi):
     )
 
 
+def count_images(folder):
+    if not os.path.exists(folder):
+        return 0
+
+    return sum(
+        1
+        for file_name in os.listdir(folder)
+        if os.path.splitext(file_name.lower())[1] in VALID_IMAGE_EXTENSIONS
+    )
+
+
+def get_product_summary(product_root):
+    return {
+        "ok_training_images": count_images(
+            os.path.join(product_root, "dataset", "ok")
+        ),
+        "ng_training_images": count_images(
+            os.path.join(product_root, "dataset", "ng")
+        ),
+        "test_images": count_images(
+            os.path.join(product_root, "test")
+        ),
+        "rejected_ok_images": count_images(
+            os.path.join(product_root, "dataset", "rejected", "ok")
+        ),
+        "rejected_ng_images": count_images(
+            os.path.join(product_root, "dataset", "rejected", "ng")
+        ),
+        "rejected_test_images": count_images(
+            os.path.join(product_root, "dataset", "rejected", "test")
+        ),
+    }
+
+
+def total_rejected(product_summary):
+    return (
+        product_summary["rejected_ok_images"] +
+        product_summary["rejected_ng_images"] +
+        product_summary["rejected_test_images"]
+    )
+
+
 def percent(part, total):
     if total == 0:
         return 0.0
@@ -71,6 +127,7 @@ def build_report_lines(
     recent_count,
     generated_at,
     roi,
+    product_summary,
     log_path,
     report_path,
     html_report_path,
@@ -102,6 +159,12 @@ def build_report_lines(
     lines.append(f"Total log rows: {total_rows}")
     lines.append(f"Decision changes: {len(decision_change_rows)}")
     lines.append(f"Saved images: {len(saved_image_rows)}")
+    lines.append("")
+    lines.append("Product Folder Summary:")
+    lines.append(f"OK training images: {product_summary['ok_training_images']}")
+    lines.append(f"NOT OK training images: {product_summary['ng_training_images']}")
+    lines.append(f"Test images: {product_summary['test_images']}")
+    lines.append(f"Rejected images: {total_rejected(product_summary)}")
     lines.append("")
     lines.append("Decision Summary:")
     lines.append(f"OK: {ok_count}")
@@ -172,6 +235,7 @@ def build_html_report(
     recent_count,
     generated_at,
     roi,
+    product_summary,
     log_path,
     report_path,
     html_report_path,
@@ -296,6 +360,10 @@ def build_html_report(
     <div class="card"><div class="label">UNCERTAIN</div><div class="value">{summary['uncertain_count']}</div></div>
     <div class="card"><div class="label">Reject %</div><div class="value">{summary['reject_percent']:.1f}%</div></div>
     <div class="card"><div class="label">Uncertain %</div><div class="value">{summary['uncertain_percent']:.1f}%</div></div>
+    <div class="card"><div class="label">OK training images</div><div class="value">{product_summary['ok_training_images']}</div></div>
+    <div class="card"><div class="label">NOT OK training images</div><div class="value">{product_summary['ng_training_images']}</div></div>
+    <div class="card"><div class="label">Test images</div><div class="value">{product_summary['test_images']}</div></div>
+    <div class="card"><div class="label">Rejected images</div><div class="value">{total_rejected(product_summary)}</div></div>
   </div>
 
   <h2>Event Summary</h2>
@@ -337,8 +405,9 @@ def save_html_report(report_path, html_report):
 
 def main():
     args = parse_args()
-    output_dir = os.path.join(PRODUCTS_DIR, args.product, "outputs")
-    roi_path = os.path.join(PRODUCTS_DIR, args.product, "roi.json")
+    product_root = os.path.join(PRODUCTS_DIR, args.product)
+    output_dir = os.path.join(product_root, "outputs")
+    roi_path = os.path.join(product_root, "roi.json")
     log_path = os.path.join(
         output_dir,
         LOG_FILE_NAME
@@ -349,12 +418,14 @@ def main():
 
     rows = read_log_rows(log_path)
     roi = read_roi(roi_path)
+    product_summary = get_product_summary(product_root)
     report_lines = build_report_lines(
         args.product,
         rows,
         args.recent,
         generated_at,
         roi,
+        product_summary,
         log_path,
         report_path,
         html_report_path,
@@ -365,6 +436,7 @@ def main():
         args.recent,
         generated_at,
         roi,
+        product_summary,
         log_path,
         report_path,
         html_report_path,

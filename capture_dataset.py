@@ -2,9 +2,21 @@ import cv2
 import os
 from datetime import datetime
 import argparse
+import re
 
 PRODUCTS_DIR = "products"
 DEFAULT_PRODUCT = "product_1"
+PRODUCT_NAME_PATTERN = r"^[a-zA-Z0-9_]+$"
+
+
+def validate_product_name(product_name):
+    if re.match(PRODUCT_NAME_PATTERN, product_name):
+        return product_name
+
+    raise argparse.ArgumentTypeError(
+        "Invalid product name. Use only letters, numbers, and underscores. "
+        "Examples: product_4, paper_clip, metal_bracket"
+    )
 
 
 def parse_args():
@@ -13,6 +25,7 @@ def parse_args():
     )
     parser.add_argument(
         "--product",
+        type=validate_product_name,
         default=DEFAULT_PRODUCT,
         help=f"Product recipe folder under {PRODUCTS_DIR}. Default: {DEFAULT_PRODUCT}."
     )
