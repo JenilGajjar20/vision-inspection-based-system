@@ -206,6 +206,21 @@ Realtime inspection writes:
 products/<product_name>/outputs/inspection_log.csv
 ```
 
+When database logging is enabled, stable realtime events are also inserted into:
+
+```text
+inspection_records
+```
+
+Database logging saves meaningful events only, such as stable decision changes and saved live frames. It does not save every camera frame.
+Stored database records include product name, stable result, raw prediction, confidence, image path, status, defect, and timestamp.
+
+To keep only CSV logging:
+
+```powershell
+python live_inspection.py --product <product_name> --disable-db-log
+```
+
 Generate reports:
 
 ```powershell

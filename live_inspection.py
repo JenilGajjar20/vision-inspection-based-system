@@ -5,6 +5,7 @@ from datetime import datetime
 
 import cv2
 
+import database
 import inspect_images
 
 
@@ -46,6 +47,11 @@ def parse_args():
         type=int,
         default=0,
         help="Camera index. Default: 0."
+    )
+    parser.add_argument(
+        "--disable-db-log",
+        action="store_true",
+        help="Disable database logging and keep only CSV logging."
     )
     return parser.parse_args()
 
@@ -92,6 +98,22 @@ def append_inspection_log(row):
             writer.writeheader()
 
         writer.writerow(row)
+
+
+def append_database_log(
+    product_name,
+    stable_decision,
+    prediction,
+    confidence,
+    image_path="",
+):
+    return database.insert_inspection_record(
+        product_name=product_name,
+        result=stable_decision,
+        prediction=prediction,
+        confidence=confidence,
+        image_path=image_path,
+    )
 
 
 def build_log_row(
@@ -146,6 +168,10 @@ def main():
     print("Press 's' to save current annotated frame")
     print("Press 'q' to quit")
     print(f"Inspection log: {os.path.join(inspect_images.OUTPUT_DIR, LOG_FILE_NAME)}")
+    print(
+        "Database logging: "
+        f"{'disabled' if args.disable_db_log else 'enabled'}"
+    )
     print(
         f"Smoothing: last {SMOOTHING_WINDOW} frames, "
         f"{STABLE_REQUIRED_COUNT} matching frames required, "
@@ -217,6 +243,14 @@ def main():
                     event="decision_change",
                 )
             )
+            if not args.disable_db_log:
+                record_id = append_database_log(
+                    args.product,
+                    stable_decision,
+                    prediction,
+                    confidence,
+                )
+                print(f"Database inspection record saved: {record_id}")
             last_stable_decision = stable_decision
 
         cv2.imshow("Realtime Vision Inspection", annotated)
@@ -241,6 +275,15 @@ def main():
                     image_path=image_path,
                 )
             )
+            if not args.disable_db_log:
+                record_id = append_database_log(
+                    args.product,
+                    stable_decision,
+                    prediction,
+                    confidence,
+                    image_path=image_path,
+                )
+                print(f"Database inspection record saved: {record_id}")
         elif key == ord("q"):
             break
 

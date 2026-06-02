@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS inspection_records (
     product_id INT,
     product_name VARCHAR(100) NOT NULL,
     result ENUM('OK', 'NOT OK', 'UNCERTAIN') NOT NULL,
+    prediction ENUM('OK', 'NOT OK') NOT NULL,
     status ENUM('PASS', 'FAIL', 'REVIEW') NOT NULL,
     defect VARCHAR(100),
     confidence DECIMAL(6, 2),
@@ -47,11 +48,25 @@ ON inspection_records(inspected_at);
 """
 
 
+ADD_PREDICTION_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN prediction ENUM('OK', 'NOT OK') NOT NULL AFTER result;
+"""
+
+
 def execute_ignore_duplicate(cursor, sql):
     try:
         cursor.execute(sql)
     except mysql.connector.Error as error:
         if error.errno != 1061:
+            raise
+
+
+def execute_ignore_existing_column(cursor, sql):
+    try:
+        cursor.execute(sql)
+    except mysql.connector.Error as error:
+        if error.errno != 1060:
             raise
 
 
@@ -75,6 +90,7 @@ def create_tables():
 
     database_cursor.execute(CREATE_PRODUCTS_TABLE)
     database_cursor.execute(CREATE_INSPECTION_RECORDS_TABLE)
+    execute_ignore_existing_column(database_cursor, ADD_PREDICTION_COLUMN)
     execute_ignore_duplicate(database_cursor, CREATE_INSPECTION_PRODUCT_INDEX)
     execute_ignore_duplicate(database_cursor, CREATE_INSPECTION_TIME_INDEX)
 
