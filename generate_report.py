@@ -1,8 +1,10 @@
 import argparse
 import csv
 import html
+import json
 import os
 from collections import Counter
+from datetime import datetime
 
 
 PRODUCTS_DIR = "products"
@@ -38,6 +40,24 @@ def read_log_rows(log_path):
         return list(csv.DictReader(file))
 
 
+def read_roi(roi_path):
+    if not os.path.exists(roi_path):
+        return None
+
+    with open(roi_path) as file:
+        return json.load(file)
+
+
+def format_roi(roi):
+    if not roi:
+        return "Not available"
+
+    return (
+        f"x={roi['x']}, y={roi['y']}, "
+        f"w={roi['w']}, h={roi['h']}"
+    )
+
+
 def percent(part, total):
     if total == 0:
         return 0.0
@@ -45,7 +65,16 @@ def percent(part, total):
     return (part / total) * 100
 
 
-def build_report_lines(product_name, rows, recent_count):
+def build_report_lines(
+    product_name,
+    rows,
+    recent_count,
+    generated_at,
+    roi,
+    log_path,
+    report_path,
+    html_report_path,
+):
     decision_counts = Counter(row["stable_decision"] for row in rows)
     event_counts = Counter(row["event"] for row in rows)
     decision_change_rows = [
@@ -64,7 +93,12 @@ def build_report_lines(product_name, rows, recent_count):
     lines.append("")
     lines.append("Inspection Report")
     lines.append("-----------------")
+    lines.append(f"Generated at: {generated_at}")
     lines.append(f"Product: {product_name}")
+    lines.append(f"ROI: {format_roi(roi)}")
+    lines.append(f"Log file: {log_path}")
+    lines.append(f"Text report: {report_path}")
+    lines.append(f"HTML report: {html_report_path}")
     lines.append(f"Total log rows: {total_rows}")
     lines.append(f"Decision changes: {len(decision_change_rows)}")
     lines.append(f"Saved images: {len(saved_image_rows)}")
@@ -132,7 +166,16 @@ def badge_class(decision):
     return "uncertain"
 
 
-def build_html_report(product_name, rows, recent_count):
+def build_html_report(
+    product_name,
+    rows,
+    recent_count,
+    generated_at,
+    roi,
+    log_path,
+    report_path,
+    html_report_path,
+):
     summary = summarize_rows(rows)
     recent_rows = rows[-recent_count:] if rows else []
     event_items = "\n".join(
@@ -236,7 +279,12 @@ def build_html_report(product_name, rows, recent_count):
 </head>
 <body>
   <h1>Inspection Report</h1>
+  <p><strong>Generated at:</strong> {html.escape(generated_at)}</p>
   <p><strong>Product:</strong> {html.escape(product_name)}</p>
+  <p><strong>ROI:</strong> {html.escape(format_roi(roi))}</p>
+  <p><strong>Log file:</strong> {html.escape(log_path)}</p>
+  <p><strong>Text report:</strong> {html.escape(report_path)}</p>
+  <p><strong>HTML report:</strong> {html.escape(html_report_path)}</p>
   <p class="note">Generated from realtime inspection log data.</p>
 
   <div class="cards">
@@ -290,16 +338,37 @@ def save_html_report(report_path, html_report):
 def main():
     args = parse_args()
     output_dir = os.path.join(PRODUCTS_DIR, args.product, "outputs")
+    roi_path = os.path.join(PRODUCTS_DIR, args.product, "roi.json")
     log_path = os.path.join(
         output_dir,
         LOG_FILE_NAME
     )
     report_path = os.path.join(output_dir, REPORT_FILE_NAME)
     html_report_path = os.path.join(output_dir, HTML_REPORT_FILE_NAME)
+    generated_at = datetime.now().isoformat(timespec="seconds")
 
     rows = read_log_rows(log_path)
-    report_lines = build_report_lines(args.product, rows, args.recent)
-    html_report = build_html_report(args.product, rows, args.recent)
+    roi = read_roi(roi_path)
+    report_lines = build_report_lines(
+        args.product,
+        rows,
+        args.recent,
+        generated_at,
+        roi,
+        log_path,
+        report_path,
+        html_report_path,
+    )
+    html_report = build_html_report(
+        args.product,
+        rows,
+        args.recent,
+        generated_at,
+        roi,
+        log_path,
+        report_path,
+        html_report_path,
+    )
     print("\n".join(report_lines))
     save_report(report_path, report_lines)
     save_html_report(html_report_path, html_report)
