@@ -75,6 +75,41 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+## Database Setup
+
+Phase 2 uses a local MySQL database.
+
+Default database name:
+
+```text
+vision_inspection_qms
+```
+
+Configure database credentials with environment variables:
+
+```powershell
+$env:DB_HOST="127.0.0.1"
+$env:DB_PORT="3306"
+$env:DB_USER="root"
+$env:DB_PASSWORD="your_password"
+$env:DB_NAME="vision_inspection_qms"
+```
+
+Initialize the database schema:
+
+```powershell
+python init_database.py
+```
+
+This creates:
+
+```text
+products
+inspection_records
+```
+
+Keep real credentials out of Git. Use `.env.example` as a reference only.
+
 ## Workflow
 
 Replace `<product_name>` with the product folder name, for example `product_3` or `product_4`.
@@ -169,6 +204,21 @@ Realtime inspection writes:
 
 ```text
 products/<product_name>/outputs/inspection_log.csv
+```
+
+When database logging is enabled, stable realtime events are also inserted into:
+
+```text
+inspection_records
+```
+
+Database logging saves meaningful events only, such as stable decision changes and saved live frames. It does not save every camera frame.
+Stored database records include product name, stable result, raw prediction, confidence, image path, status, defect, and timestamp.
+
+To keep only CSV logging:
+
+```powershell
+python live_inspection.py --product <product_name> --disable-db-log
 ```
 
 Generate reports:

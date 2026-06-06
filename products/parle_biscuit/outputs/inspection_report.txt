@@ -1,0 +1,41 @@
+
+Inspection Report
+-----------------
+Generated at: 2026-06-06T18:27:09
+Product: parle_biscuit
+ROI: x=203, y=184, w=195, h=128
+Log file: products\parle_biscuit\outputs\inspection_log.csv
+Text report: products\parle_biscuit\outputs\inspection_report.txt
+HTML report: products\parle_biscuit\outputs\inspection_report.html
+Total log rows: 115
+Decision changes: 33
+Saved images: 82
+
+Product Folder Summary:
+OK training images: 50
+NOT OK training images: 50
+Test images: 60
+Rejected images: 0
+
+Decision Summary:
+OK: 61
+NOT OK: 0
+UNCERTAIN: 54
+Reject percentage: 0.0%
+Uncertain percentage: 47.0%
+
+Event Summary:
+decision_change: 33
+image_saved: 82
+
+Recent 10 Log Rows:
+2026-06-06T18:26:12 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182612_650778.jpg
+2026-06-06T18:26:12 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182612_876785.jpg
+2026-06-06T18:26:13 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182613_070389.jpg
+2026-06-06T18:26:13 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182613_245267.jpg
+2026-06-06T18:26:13 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182613_441666.jpg
+2026-06-06T18:26:13 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182613_646127.jpg
+2026-06-06T18:26:13 | Decision=UNCERTAIN | Confidence=1.0% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182613_805365.jpg
+2026-06-06T18:26:14 | Decision=UNCERTAIN | Confidence=1.0% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182614_078609.jpg
+2026-06-06T18:26:14 | Decision=UNCERTAIN | Confidence=1.0% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182614_269920.jpg
+2026-06-06T18:26:14 | Decision=UNCERTAIN | Confidence=0.9% | Event=image_saved | Image=products\parle_biscuit\outputs\live_parle_biscuit_20260606_182614_461184.jpg
