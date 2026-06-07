@@ -307,6 +307,18 @@ Generate reports:
 python generate_report.py --product <product_name>
 ```
 
+Generate reports from database records:
+
+```powershell
+python generate_report.py --product <product_name> --source db
+```
+
+Generate date-wise database reports:
+
+```powershell
+python generate_report.py --product <product_name> --source db --start-date 2026-06-07 --end-date 2026-06-07
+```
+
 Show fewer or more recent log rows:
 
 ```powershell

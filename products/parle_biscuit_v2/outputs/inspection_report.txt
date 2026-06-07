@@ -1,15 +1,14 @@
 
 Inspection Report
 -----------------
-Generated at: 2026-06-07T14:52:20
+Generated at: 2026-06-07T16:04:59
+Source: database
 Product: parle_biscuit_v2
+Date range: 2026-06-07 to 2026-06-07
 ROI: x=217, y=169, w=242, h=163
-Log file: products\parle_biscuit_v2\outputs\inspection_log.csv
 Text report: products\parle_biscuit_v2\outputs\inspection_report.txt
 HTML report: products\parle_biscuit_v2\outputs\inspection_report.html
-Total log rows: 141
-Decision changes: 107
-Saved images: 34
+Total records: 141
 
 Product Folder Summary:
 OK training images: 50
@@ -18,24 +17,16 @@ Test images: 60
 Rejected images: 0
 
 Decision Summary:
-OK: 27
+OK: 29
 NOT OK: 58
-UNCERTAIN: 56
+UNCERTAIN: 54
 Reject percentage: 41.1%
-Uncertain percentage: 39.7%
+Uncertain percentage: 38.3%
 
-Event Summary:
-decision_change: 107
-image_saved: 34
+Status Summary:
+PASS: 29
+FAIL: 58
+REVIEW: 54
 
-Recent 10 Log Rows:
-2026-06-07T14:51:56 | Decision=NOT OK | Confidence=11.0% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_220598.jpg
-2026-06-07T14:51:56 | Decision=NOT OK | Confidence=9.9% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_399372.jpg
-2026-06-07T14:51:56 | Decision=NOT OK | Confidence=24.1% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_793310.jpg
-2026-06-07T14:51:57 | Decision=NOT OK | Confidence=19.5% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_125609.jpg
-2026-06-07T14:51:57 | Decision=NOT OK | Confidence=20.7% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_313672.jpg
-2026-06-07T14:51:57 | Decision=NOT OK | Confidence=25.2% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_685151.jpg
-2026-06-07T14:51:57 | Decision=NOT OK | Confidence=23.9% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_953167.jpg
-2026-06-07T14:51:58 | Decision=NOT OK | Confidence=26.6% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_189126.jpg
-2026-06-07T14:51:58 | Decision=NOT OK | Confidence=23.5% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_385914.jpg
-2026-06-07T14:51:58 | Decision=NOT OK | Confidence=30.9% | Event=image_saved | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_683886.jpg
+Recent 1 Database Records:
+2026-06-07 14:51:58 | AI=NOT OK | Final=NOT OK | Status=FAIL | Confidence=30.88% | Image=products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_683886.jpg

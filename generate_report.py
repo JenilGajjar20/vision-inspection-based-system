@@ -7,6 +7,8 @@ import re
 from collections import Counter
 from datetime import datetime
 
+import database
+
 
 PRODUCTS_DIR = "products"
 DEFAULT_PRODUCT = "product_1"
@@ -29,7 +31,7 @@ def validate_product_name(product_name):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Generate a simple inspection summary report from CSV logs."
+        description="Generate an inspection summary report from CSV logs or database records."
     )
     parser.add_argument(
         "--product",
@@ -42,6 +44,20 @@ def parse_args():
         type=int,
         default=10,
         help="Number of recent log rows to display. Default: 10."
+    )
+    parser.add_argument(
+        "--source",
+        choices=["csv", "db"],
+        default="csv",
+        help="Report source. Use csv for inspection_log.csv or db for inspection_records. Default: csv."
+    )
+    parser.add_argument(
+        "--start-date",
+        help="Database report start date, for example 2026-06-07."
+    )
+    parser.add_argument(
+        "--end-date",
+        help="Database report end date, for example 2026-06-07."
     )
     return parser.parse_args()
 
@@ -227,6 +243,237 @@ def badge_class(decision):
         return "ng"
 
     return "uncertain"
+
+
+def effective_decision(record):
+    return record.get("final_decision") or record.get("result") or ""
+
+
+def effective_status(record):
+    return record.get("reviewed_status") or record.get("status") or ""
+
+
+def build_db_report_lines(
+    product_name,
+    records,
+    summary,
+    recent_count,
+    generated_at,
+    roi,
+    product_summary,
+    report_path,
+    html_report_path,
+    start_date=None,
+    end_date=None,
+):
+    lines = []
+    total_rows = summary["total"]
+    recent_records = records[:recent_count]
+
+    lines.append("")
+    lines.append("Inspection Report")
+    lines.append("-----------------")
+    lines.append(f"Generated at: {generated_at}")
+    lines.append(f"Source: database")
+    lines.append(f"Product: {product_name}")
+    lines.append(f"Date range: {start_date or '-'} to {end_date or '-'}")
+    lines.append(f"ROI: {format_roi(roi)}")
+    lines.append(f"Text report: {report_path}")
+    lines.append(f"HTML report: {html_report_path}")
+    lines.append(f"Total records: {total_rows}")
+    lines.append("")
+    lines.append("Product Folder Summary:")
+    lines.append(f"OK training images: {product_summary['ok_training_images']}")
+    lines.append(f"NOT OK training images: {product_summary['ng_training_images']}")
+    lines.append(f"Test images: {product_summary['test_images']}")
+    lines.append(f"Rejected images: {total_rejected(product_summary)}")
+    lines.append("")
+    lines.append("Decision Summary:")
+    lines.append(f"OK: {summary['by_result']['OK']}")
+    lines.append(f"NOT OK: {summary['by_result']['NOT OK']}")
+    lines.append(f"UNCERTAIN: {summary['by_result']['UNCERTAIN']}")
+    lines.append(f"Reject percentage: {summary['reject_percentage']:.1f}%")
+    lines.append(f"Uncertain percentage: {summary['uncertain_percentage']:.1f}%")
+    lines.append("")
+    lines.append("Status Summary:")
+    lines.append(f"PASS: {summary['by_status']['PASS']}")
+    lines.append(f"FAIL: {summary['by_status']['FAIL']}")
+    lines.append(f"REVIEW: {summary['by_status']['REVIEW']}")
+
+    if not records:
+        return lines
+
+    lines.append("")
+    lines.append(f"Recent {min(recent_count, len(records))} Database Records:")
+    for record in recent_records:
+        image_text = record["image_path"] if record["image_path"] else "-"
+        lines.append(
+            f"{record['inspected_at']} | "
+            f"AI={record['result']} | "
+            f"Final={effective_decision(record) or '-'} | "
+            f"Status={effective_status(record) or '-'} | "
+            f"Confidence={record['confidence'] or 0:.2f}% | "
+            f"Image={image_text}"
+        )
+
+    return lines
+
+
+def build_db_html_report(
+    product_name,
+    records,
+    summary,
+    recent_count,
+    generated_at,
+    roi,
+    product_summary,
+    report_path,
+    html_report_path,
+    start_date=None,
+    end_date=None,
+):
+    recent_records = records[:recent_count]
+    recent_table_rows = []
+
+    for record in recent_records:
+        decision = effective_decision(record) or record["result"]
+        image_path = record["image_path"] if record["image_path"] else "-"
+        recent_table_rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(record['inspected_at']))}</td>"
+            f"<td><span class=\"badge {badge_class(record['result'])}\">{html.escape(record['result'])}</span></td>"
+            f"<td><span class=\"badge {badge_class(decision)}\">{html.escape(decision)}</span></td>"
+            f"<td>{html.escape(effective_status(record) or '-')}</td>"
+            f"<td>{record['confidence'] or 0:.2f}%</td>"
+            f"<td>{html.escape(image_path)}</td>"
+            "</tr>"
+        )
+
+    recent_rows_html = "\n".join(recent_table_rows)
+
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inspection Report - {html.escape(product_name)}</title>
+  <style>
+    body {{
+      margin: 32px;
+      color: #1f2933;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }}
+    h1, h2 {{
+      color: #102a43;
+    }}
+    .cards {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }}
+    .card {{
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+      border-radius: 6px;
+      padding: 14px;
+    }}
+    .label {{
+      color: #52606d;
+      font-size: 12px;
+      text-transform: uppercase;
+    }}
+    .value {{
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 6px;
+    }}
+    table {{
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+    }}
+    th, td {{
+      border-bottom: 1px solid #d9e2ec;
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }}
+    th {{
+      background: #e4e7eb;
+    }}
+    .badge {{
+      border-radius: 999px;
+      display: inline-block;
+      font-weight: 700;
+      padding: 4px 10px;
+    }}
+    .ok {{
+      background: #d9f9e6;
+      color: #0b6b35;
+    }}
+    .ng {{
+      background: #ffe3e3;
+      color: #b42318;
+    }}
+    .uncertain {{
+      background: #fff3c4;
+      color: #7c5e10;
+    }}
+    .note {{
+      color: #52606d;
+      font-size: 13px;
+    }}
+  </style>
+</head>
+<body>
+  <h1>Inspection Report</h1>
+  <p><strong>Generated at:</strong> {html.escape(generated_at)}</p>
+  <p><strong>Source:</strong> database</p>
+  <p><strong>Product:</strong> {html.escape(product_name)}</p>
+  <p><strong>Date range:</strong> {html.escape(start_date or '-')} to {html.escape(end_date or '-')}</p>
+  <p><strong>ROI:</strong> {html.escape(format_roi(roi))}</p>
+  <p><strong>Text report:</strong> {html.escape(report_path)}</p>
+  <p><strong>HTML report:</strong> {html.escape(html_report_path)}</p>
+  <p class="note">Generated from database inspection records. Reviewed final decisions are used when available.</p>
+
+  <div class="cards">
+    <div class="card"><div class="label">Total records</div><div class="value">{summary['total']}</div></div>
+    <div class="card"><div class="label">OK</div><div class="value">{summary['by_result']['OK']}</div></div>
+    <div class="card"><div class="label">NOT OK</div><div class="value">{summary['by_result']['NOT OK']}</div></div>
+    <div class="card"><div class="label">UNCERTAIN</div><div class="value">{summary['by_result']['UNCERTAIN']}</div></div>
+    <div class="card"><div class="label">Reject %</div><div class="value">{summary['reject_percentage']:.1f}%</div></div>
+    <div class="card"><div class="label">Uncertain %</div><div class="value">{summary['uncertain_percentage']:.1f}%</div></div>
+    <div class="card"><div class="label">PASS</div><div class="value">{summary['by_status']['PASS']}</div></div>
+    <div class="card"><div class="label">FAIL</div><div class="value">{summary['by_status']['FAIL']}</div></div>
+    <div class="card"><div class="label">REVIEW</div><div class="value">{summary['by_status']['REVIEW']}</div></div>
+    <div class="card"><div class="label">OK training images</div><div class="value">{product_summary['ok_training_images']}</div></div>
+    <div class="card"><div class="label">NOT OK training images</div><div class="value">{product_summary['ng_training_images']}</div></div>
+    <div class="card"><div class="label">Test images</div><div class="value">{product_summary['test_images']}</div></div>
+    <div class="card"><div class="label">Rejected images</div><div class="value">{total_rejected(product_summary)}</div></div>
+  </div>
+
+  <h2>Recent {min(recent_count, len(records))} Database Records</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>AI Decision</th>
+        <th>Final Decision</th>
+        <th>Status</th>
+        <th>Confidence</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+      {recent_rows_html}
+    </tbody>
+  </table>
+</body>
+</html>
+"""
 
 
 def build_html_report(
@@ -415,32 +662,75 @@ def main():
     report_path = os.path.join(output_dir, REPORT_FILE_NAME)
     html_report_path = os.path.join(output_dir, HTML_REPORT_FILE_NAME)
     generated_at = datetime.now().isoformat(timespec="seconds")
+    os.makedirs(output_dir, exist_ok=True)
 
-    rows = read_log_rows(log_path)
     roi = read_roi(roi_path)
     product_summary = get_product_summary(product_root)
-    report_lines = build_report_lines(
-        args.product,
-        rows,
-        args.recent,
-        generated_at,
-        roi,
-        product_summary,
-        log_path,
-        report_path,
-        html_report_path,
-    )
-    html_report = build_html_report(
-        args.product,
-        rows,
-        args.recent,
-        generated_at,
-        roi,
-        product_summary,
-        log_path,
-        report_path,
-        html_report_path,
-    )
+
+    if args.source == "db":
+        summary = database.fetch_inspection_summary(
+            product_name=args.product,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+        records = database.fetch_inspection_records(
+            product_name=args.product,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            limit=500,
+            offset=0,
+        )
+        report_lines = build_db_report_lines(
+            args.product,
+            records,
+            summary,
+            args.recent,
+            generated_at,
+            roi,
+            product_summary,
+            report_path,
+            html_report_path,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+        html_report = build_db_html_report(
+            args.product,
+            records,
+            summary,
+            args.recent,
+            generated_at,
+            roi,
+            product_summary,
+            report_path,
+            html_report_path,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+    else:
+        rows = read_log_rows(log_path)
+        report_lines = build_report_lines(
+            args.product,
+            rows,
+            args.recent,
+            generated_at,
+            roi,
+            product_summary,
+            log_path,
+            report_path,
+            html_report_path,
+        )
+        html_report = build_html_report(
+            args.product,
+            rows,
+            args.recent,
+            generated_at,
+            roi,
+            product_summary,
+            log_path,
+            report_path,
+            html_report_path,
+        )
+
     print("\n".join(report_lines))
     save_report(report_path, report_lines)
     save_html_report(html_report_path, html_report)
