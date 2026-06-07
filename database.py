@@ -119,6 +119,25 @@ def serialize_row(row):
     }
 
 
+def fetch_product_names():
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT product_name
+        FROM products
+        ORDER BY product_name ASC
+        """
+    )
+    product_names = [row[0] for row in cursor.fetchall()]
+
+    cursor.close()
+    connection.close()
+
+    return product_names
+
+
 def normalize_end_date(value):
     if value and len(value) == 10:
         return f"{value} 23:59:59"
@@ -232,11 +251,15 @@ def fetch_recent_inspections(limit=10, product_name=None):
 
 def fetch_inspection_summary(
     product_name=None,
+    result=None,
+    status=None,
     start_date=None,
     end_date=None,
 ):
     where_clause, params = build_inspection_filters(
         product_name=product_name,
+        result=result,
+        status=status,
         start_date=start_date,
         end_date=end_date,
     )
