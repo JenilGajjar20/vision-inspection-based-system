@@ -148,9 +148,9 @@ http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2&result=NOT%20OK
 http://127.0.0.1:5000/dashboard?status=FAIL
 ```
 
-The dashboard shows total inspections, OK count, NOT OK count, UNCERTAIN count, rejection percentage, uncertain percentage, and recent inspection records.
+The dashboard shows total inspections, OK count, NOT OK count, UNCERTAIN count, rejection percentage, uncertain percentage, recent inspection records, and saved image previews when image files are available.
 
-The review workflow lists pending `UNCERTAIN` records, shows the inspection image, original AI decision, prediction, confidence, and allows the user to mark the final decision as `OK` or `NOT OK`. Reviewed records store `final_decision`, `reviewed_status`, `reviewed_by`, `review_notes`, and `reviewed_at`, while the original AI decision remains preserved in `result`.
+The review workflow lists pending `UNCERTAIN` records, shows the inspection image when available, original AI decision, prediction, confidence, and allows the user to mark the final decision as `OK` or `NOT OK`. Reviewed records store `final_decision`, `reviewed_status`, `reviewed_by`, `review_notes`, and `reviewed_at`, while the original AI decision remains preserved in `result`.
 
 During realtime inspection, automatic decision-change events save an annotated image for `OK`, `NOT OK`, and `UNCERTAIN` records. Press `s` to save an extra frame manually.
 
