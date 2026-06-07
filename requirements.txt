@@ -1,3 +1,4 @@
 opencv-python
 numpy
 mysql-connector-python
+flask
