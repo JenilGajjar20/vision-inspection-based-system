@@ -11,6 +11,9 @@ DEFAULT_PRODUCT = "product_1"
 LOW_CONFIDENCE_LIMIT = 0.08
 UNCERTAIN_LABEL = "UNCERTAIN"
 PRODUCT_NAME_PATTERN = r"^[a-zA-Z0-9_]+$"
+ZONE_FEATURE_COUNT = 32
+WARM_SHAPE_FEATURE_RANGE = (32, 42)
+FOREGROUND_SHAPE_FEATURE_RANGE = (42, 52)
 
 OK_DIR = None
 NG_DIR = None
@@ -145,9 +148,9 @@ def select_roi_from_sample():
     if sample is None:
         raise Exception("Could not read sample image.")
 
-    print("Select the cap area using mouse, then press ENTER.")
-    roi = cv2.selectROI("Select Cap ROI", sample, showCrosshair=True)
-    cv2.destroyWindow("Select Cap ROI")
+    print("Select the inspection area using mouse, then press ENTER.")
+    roi = cv2.selectROI("Select Inspection ROI", sample, showCrosshair=True)
+    cv2.destroyWindow("Select Inspection ROI")
 
     x, y, w, h = roi
 
@@ -266,7 +269,7 @@ def extract_features(image, roi):
     hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
 
     # Use a few fixed zones inside the selected ROI. This stays simple, but it
-    # captures where cap/mouth differences normally appear.
+    # captures local brightness, contrast, and edge differences.
     zones = [
         (0.00, 0.72, 0.00, 1.00),  # upper cap/mouth area
         (0.00, 0.55, 0.15, 0.85),  # center of cap
@@ -304,7 +307,78 @@ def extract_features(image, roi):
             np.count_nonzero(edges) / edges.size,
         ])
 
+    edge_mask = cv2.Canny(gray, 50, 150)
+
+    # Shape features help with broken-product cases. For example, a biscuit can
+    # look similar in color/brightness while changing from one piece to multiple
+    # fragments. These features are intentionally generic and are added to the
+    # existing zone features instead of replacing them.
+    warm_mask = (
+        (hsv[:, :, 0] >= 5) &
+        (hsv[:, :, 0] <= 40) &
+        (hsv[:, :, 1] > 35) &
+        (hsv[:, :, 2] > 40)
+    ).astype("uint8") * 255
+    foreground_mask = (
+        ((hsv[:, :, 1] > 45) & (hsv[:, :, 2] > 35)) |
+        (gray < 165)
+    ).astype("uint8") * 255
+
+    kernel = np.ones((3, 3), np.uint8)
+    warm_mask = cv2.morphologyEx(warm_mask, cv2.MORPH_OPEN, kernel)
+    foreground_mask = cv2.morphologyEx(foreground_mask, cv2.MORPH_OPEN, kernel)
+
+    features.extend(extract_mask_shape_features(warm_mask, edge_mask))
+    features.extend(extract_mask_shape_features(foreground_mask, edge_mask))
+
     return np.array(features)
+
+
+def extract_mask_shape_features(mask, edge_mask):
+    roi_area = mask.size
+    min_area = max(50, int(roi_area * 0.002))
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = [contour for contour in contours if cv2.contourArea(contour) >= min_area]
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+    if not contours:
+        return [
+            0.0,  # mask area ratio
+            0.0,  # component count
+            0.0,  # largest area ratio
+            0.0,  # largest area / total area
+            0.0,  # second-largest area ratio
+            0.0,  # second / largest area
+            0.0,  # largest bounding box aspect ratio
+            0.0,  # largest contour extent
+            0.0,  # largest contour compactness
+            0.0,  # edge density inside mask
+        ]
+
+    areas = np.array([cv2.contourArea(contour) for contour in contours])
+    total_area = np.sum(areas)
+    largest = contours[0]
+    largest_area = areas[0]
+    second_area = areas[1] if len(areas) > 1 else 0.0
+    x, y, w, h = cv2.boundingRect(largest)
+    perimeter = cv2.arcLength(largest, True)
+    compactness = (perimeter * perimeter) / (largest_area + 1e-6)
+    extent = largest_area / (w * h + 1e-6)
+    mask_pixels = np.count_nonzero(mask)
+    edge_density = np.count_nonzero(edge_mask[mask > 0]) / (mask_pixels + 1e-6)
+
+    return [
+        mask_pixels / roi_area,
+        min(len(contours), 10) / 10,
+        largest_area / roi_area,
+        largest_area / (total_area + 1e-6),
+        second_area / roi_area,
+        second_area / (largest_area + 1e-6),
+        w / (h + 1e-6),
+        extent,
+        compactness / 100,
+        edge_density,
+    ]
 
 
 def build_training_data(roi):
@@ -333,6 +407,11 @@ def build_training_data(roi):
 
 
 def train_simple_classifier(features, labels):
+    selected_features, feature_mode = select_feature_mode(features, labels)
+    if feature_mode != "all":
+        print(f"Feature mode selected: {feature_mode}")
+
+    features = selected_features
     mean = np.mean(features, axis=0)
     std = np.std(features, axis=0) + 1e-6
 
@@ -362,10 +441,68 @@ def train_simple_classifier(features, labels):
         "weights": weights,
         "threshold": threshold,
         "train_features": normalized,
-        "train_labels": labels
+        "train_labels": labels,
+        "feature_mode": feature_mode,
     }
 
     return model
+
+
+def select_feature_mode(features, labels):
+    warm_start, warm_end = WARM_SHAPE_FEATURE_RANGE
+    foreground_start, foreground_end = FOREGROUND_SHAPE_FEATURE_RANGE
+
+    if features.shape[1] < foreground_end:
+        return features, "all"
+
+    warm_features = features[:, warm_start:warm_end]
+    warm_area = warm_features[:, 0]
+    warm_component_count = warm_features[:, 1]
+    warm_object_present = np.mean(warm_area) > 0.03
+    compact_single_object = (
+        np.mean(warm_component_count) <= 0.12 and
+        np.std(warm_area) <= 0.003
+    )
+    warm_accuracy, warm_confidence = estimate_training_fit(warm_features, labels)
+
+    if (
+        warm_object_present and
+        compact_single_object and
+        warm_accuracy >= 95 and
+        warm_confidence >= 0.20
+    ):
+        return warm_features, "warm_shape"
+
+    return features[:, :ZONE_FEATURE_COUNT], "zone"
+
+
+def estimate_training_fit(features, labels):
+    mean = np.mean(features, axis=0)
+    std = np.std(features, axis=0) + 1e-6
+    normalized = (features - mean) / std
+    ok_features = normalized[labels == "OK"]
+    ng_features = normalized[labels == "NOT OK"]
+
+    if len(ok_features) == 0 or len(ng_features) == 0:
+        return 0.0, 0.0
+
+    ok_center = np.mean(ok_features, axis=0)
+    ng_center = np.mean(ng_features, axis=0)
+    correct = 0
+    confidences = []
+
+    for sample, label in zip(normalized, labels):
+        ok_distance = np.linalg.norm(sample - ok_center)
+        ng_distance = np.linalg.norm(sample - ng_center)
+        prediction = "OK" if ok_distance <= ng_distance else "NOT OK"
+
+        if prediction == label:
+            correct += 1
+
+        confidences.append(calculate_confidence(ok_distance, ng_distance))
+
+    accuracy = (correct / len(labels)) * 100
+    return accuracy, float(np.mean(confidences))
 
 
 def calculate_confidence(ok_distance, ng_distance):
@@ -397,9 +534,28 @@ def predict_from_normalized(normalized, model):
 
 def predict(image, roi, model):
     feature = extract_features(image, roi)
+    feature = select_prediction_features(feature, model)
     normalized = (feature - model["mean"]) / model["std"]
 
     return predict_from_normalized(normalized, model)
+
+
+def select_prediction_features(feature, model):
+    feature_mode = model.get("feature_mode", "all")
+
+    if feature_mode == "warm_shape":
+        start, end = WARM_SHAPE_FEATURE_RANGE
+        return feature[start:end]
+
+    if feature_mode == "shape":
+        start, _ = WARM_SHAPE_FEATURE_RANGE
+        _, end = FOREGROUND_SHAPE_FEATURE_RANGE
+        return feature[start:end]
+
+    if feature_mode == "zone":
+        return feature[:ZONE_FEATURE_COUNT]
+
+    return feature
 
 
 def evaluate_training_data(features, labels, paths, roi, model):
@@ -415,7 +571,8 @@ def evaluate_training_data(features, labels, paths, roi, model):
     print("-------------------------")
 
     for i in range(total):
-        normalized = (features[i] - model["mean"]) / model["std"]
+        training_feature = select_prediction_features(features[i], model)
+        normalized = (training_feature - model["mean"]) / model["std"]
 
         predicted, ok_distance, ng_distance, confidence = predict_from_normalized(
             normalized, model)
@@ -547,7 +704,7 @@ def test_images(roi, model):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Evaluate bottle cap inspection images."
+        description="Evaluate product inspection images."
     )
     parser.add_argument(
         "--product",
@@ -590,8 +747,8 @@ def main():
     if accuracy < 85:
         print("Warning: Accuracy is low.")
         print("Check outputs/roi_preview.jpg and outputs/training first.")
-        print("If the rectangle is not on the cap or bottle mouth, run: python inspect_images.py --reset-roi")
-        print("For best results, recapture OK and NOT OK images with the bottle in the same position.")
+        print("If the rectangle is not on the inspection area, run: python inspect_images.py --reset-roi")
+        print("For best results, recapture OK and NOT OK images with the product in the same position.")
 
     test_images(roi, model)
 

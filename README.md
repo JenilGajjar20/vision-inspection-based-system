@@ -65,6 +65,7 @@ capture_dataset.py   Capture OK, NOT OK, and test images from camera
 inspect_images.py    Train, evaluate, test, and save annotated outputs
 live_inspection.py   Run realtime camera inspection with smoothing and logging
 generate_report.py   Summarize realtime inspection CSV logs
+api.py               Serve inspection records from the database
 ```
 
 ## Setup
@@ -109,6 +110,54 @@ inspection_records
 ```
 
 Keep real credentials out of Git. Use `.env.example` as a reference only.
+
+## Backend API
+
+Start the local API server:
+
+```powershell
+python api.py
+```
+
+Default API base URL:
+
+```text
+http://127.0.0.1:5000
+```
+
+Health check:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/api/health"
+```
+
+Fetch inspection records:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records"
+```
+
+Filter records by product, result, status, and date range:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records?product=parle_biscuit_v2&result=NOT%20OK"
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records?status=FAIL&start_date=2026-06-07&end_date=2026-06-07"
+```
+
+Fetch recent inspections:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/recent?limit=10"
+```
+
+Fetch summary counts for dashboard cards and charts:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary"
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary?product=parle_biscuit_v2"
+```
+
+The API reads from the `inspection_records` table. Run `live_inspection.py` with database logging enabled before expecting records in the API response.
 
 ## Workflow
 

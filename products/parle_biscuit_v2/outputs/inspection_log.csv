@@ -1,0 +1,142 @@
+timestamp,product,stable_decision,frame_decision,prediction,confidence_percent,ok_distance,ng_distance,history_ok,history_ng,history_uncertain,event,image_path
+2026-06-07T14:49:31,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,0.0,109.22,109.16,0,0,1,decision_change,
+2026-06-07T14:49:52,parle_biscuit_v2,OK,OK,OK,10.4,7.70,9.48,3,0,7,decision_change,
+2026-06-07T14:49:53,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,5.0,9.99,11.04,2,0,8,decision_change,
+2026-06-07T14:49:56,parle_biscuit_v2,OK,OK,OK,8.7,8.58,10.21,3,0,7,decision_change,
+2026-06-07T14:49:57,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,4.6,14.47,15.86,2,0,8,decision_change,
+2026-06-07T14:49:58,parle_biscuit_v2,OK,OK,OK,9.8,7.86,9.57,3,0,7,decision_change,
+2026-06-07T14:49:58,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,6.2,9.47,10.73,2,0,8,decision_change,
+2026-06-07T14:50:00,parle_biscuit_v2,OK,OK,OK,9.3,8.53,10.26,3,0,7,decision_change,
+2026-06-07T14:50:01,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.7,7.81,9.11,2,0,8,decision_change,
+2026-06-07T14:50:01,parle_biscuit_v2,OK,OK,OK,8.4,7.75,9.17,3,0,7,decision_change,
+2026-06-07T14:50:01,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.7,7.71,9.00,2,0,8,decision_change,
+2026-06-07T14:50:02,parle_biscuit_v2,OK,OK,OK,8.4,7.77,9.20,3,0,7,decision_change,
+2026-06-07T14:50:02,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.7,7.72,9.01,2,0,8,decision_change,
+2026-06-07T14:50:02,parle_biscuit_v2,OK,OK,OK,9.5,7.65,9.26,3,0,7,decision_change,
+2026-06-07T14:50:05,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,6.7,7.97,9.12,2,0,8,decision_change,
+2026-06-07T14:50:05,parle_biscuit_v2,OK,OK,OK,8.1,8.13,9.57,3,0,7,decision_change,
+2026-06-07T14:50:05,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.7,8.05,9.39,2,0,8,decision_change,
+2026-06-07T14:50:06,parle_biscuit_v2,OK,OK,OK,8.4,8.09,9.58,3,0,7,decision_change,
+2026-06-07T14:50:06,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,6.9,8.17,9.39,2,0,8,decision_change,
+2026-06-07T14:50:07,parle_biscuit_v2,OK,OK,OK,8.9,7.74,9.26,3,0,7,decision_change,
+2026-06-07T14:50:08,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,6.5,10.94,12.46,2,0,8,decision_change,
+2026-06-07T14:50:09,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,4.3,17.72,19.30,0,0,10,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145009_609205.jpg
+2026-06-07T14:50:12,parle_biscuit_v2,OK,OK,OK,8.8,9.03,10.77,3,0,7,decision_change,
+2026-06-07T14:50:13,parle_biscuit_v2,OK,OK,OK,10.5,8.25,10.17,10,0,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145013_002389.jpg
+2026-06-07T14:50:13,parle_biscuit_v2,OK,OK,OK,10.1,8.71,10.65,8,0,2,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145013_303712.jpg
+2026-06-07T14:50:13,parle_biscuit_v2,OK,UNCERTAIN,OK,7.9,8.83,10.35,7,0,3,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145013_706745.jpg
+2026-06-07T14:50:13,parle_biscuit_v2,OK,OK,OK,9.2,9.39,11.30,7,0,3,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145013_953701.jpg
+2026-06-07T14:50:14,parle_biscuit_v2,OK,OK,OK,8.9,9.26,11.08,7,0,3,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145014_133536.jpg
+2026-06-07T14:50:14,parle_biscuit_v2,OK,OK,OK,9.0,9.12,10.93,8,0,2,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145014_328316.jpg
+2026-06-07T14:50:14,parle_biscuit_v2,OK,UNCERTAIN,OK,7.8,9.14,10.69,9,0,1,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145014_549621.jpg
+2026-06-07T14:50:14,parle_biscuit_v2,OK,UNCERTAIN,OK,7.5,8.97,10.43,8,0,2,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145014_726738.jpg
+2026-06-07T14:50:14,parle_biscuit_v2,OK,OK,OK,8.7,9.00,10.72,9,0,1,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145014_936093.jpg
+2026-06-07T14:50:15,parle_biscuit_v2,OK,OK,OK,10.2,8.99,11.04,9,0,1,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145015_125561.jpg
+2026-06-07T14:50:15,parle_biscuit_v2,OK,UNCERTAIN,OK,8.0,9.14,10.73,8,0,2,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145015_337256.jpg
+2026-06-07T14:50:15,parle_biscuit_v2,OK,OK,OK,9.2,8.80,10.60,8,0,2,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145015_545543.jpg
+2026-06-07T14:50:15,parle_biscuit_v2,OK,OK,OK,9.2,8.89,10.69,10,0,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145015_742359.jpg
+2026-06-07T14:50:15,parle_biscuit_v2,OK,UNCERTAIN,OK,7.3,9.18,10.63,6,0,4,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145015_959844.jpg
+2026-06-07T14:50:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.2,9.25,10.69,2,0,8,decision_change,
+2026-06-07T14:50:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.5,9.22,10.71,1,0,9,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145016_167060.jpg
+2026-06-07T14:50:16,parle_biscuit_v2,OK,OK,OK,8.9,9.13,10.93,3,0,7,decision_change,
+2026-06-07T14:50:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.9,9.24,10.83,2,0,8,decision_change,
+2026-06-07T14:50:16,parle_biscuit_v2,OK,OK,OK,8.0,9.21,10.81,3,0,7,decision_change,
+2026-06-07T14:50:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,OK,7.0,9.78,11.24,2,0,8,decision_change,
+2026-06-07T14:50:33,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,0.0,1556.12,1556.08,0,0,1,decision_change,
+2026-06-07T14:50:41,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.2,12.23,10.16,0,3,7,decision_change,
+2026-06-07T14:50:41,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,4.2,12.00,11.03,0,2,8,decision_change,
+2026-06-07T14:50:41,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,12.1,10.10,7.92,0,3,7,decision_change,
+2026-06-07T14:50:42,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.3,10.59,9.33,0,2,8,decision_change,
+2026-06-07T14:50:47,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.9,9.57,8.01,0,3,7,decision_change,
+2026-06-07T14:50:47,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.80,8.39,0,2,8,decision_change,
+2026-06-07T14:50:48,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.0,9.88,8.41,0,3,7,decision_change,
+2026-06-07T14:50:48,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.2,10.24,9.05,0,2,8,decision_change,
+2026-06-07T14:50:50,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.2,10.10,8.40,0,3,7,decision_change,
+2026-06-07T14:50:51,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,4.6,9.62,8.78,0,2,8,decision_change,
+2026-06-07T14:50:51,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.2,9.97,8.45,0,3,7,decision_change,
+2026-06-07T14:50:51,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.4,9.83,8.47,0,2,8,decision_change,
+2026-06-07T14:50:51,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.6,9.98,8.39,0,3,7,decision_change,
+2026-06-07T14:50:51,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.7,9.68,8.45,0,2,8,decision_change,
+2026-06-07T14:50:52,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.6,10.07,8.48,0,3,7,decision_change,
+2026-06-07T14:50:52,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.3,9.79,8.45,0,2,8,decision_change,
+2026-06-07T14:50:52,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.2,9.81,8.32,0,3,7,decision_change,
+2026-06-07T14:50:53,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.7,9.83,8.43,0,2,8,decision_change,
+2026-06-07T14:50:54,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.3,9.81,8.32,0,3,7,decision_change,
+2026-06-07T14:50:54,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.0,9.82,8.54,0,2,8,decision_change,
+2026-06-07T14:50:54,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.6,9.94,8.37,0,3,7,decision_change,
+2026-06-07T14:50:55,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.80,8.38,0,2,8,decision_change,
+2026-06-07T14:50:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.4,9.83,8.30,0,3,7,decision_change,
+2026-06-07T14:50:56,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.82,8.39,0,2,8,decision_change,
+2026-06-07T14:50:56,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.2,9.90,8.40,0,3,7,decision_change,
+2026-06-07T14:50:56,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.8,9.74,8.50,0,2,8,decision_change,
+2026-06-07T14:50:57,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.3,9.88,8.38,0,3,7,decision_change,
+2026-06-07T14:50:58,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.3,9.85,8.52,0,2,8,decision_change,
+2026-06-07T14:50:58,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.9,10.01,8.37,0,3,7,decision_change,
+2026-06-07T14:51:02,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,5.7,9.74,8.69,0,2,8,decision_change,
+2026-06-07T14:51:02,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.3,9.86,8.36,0,3,7,decision_change,
+2026-06-07T14:51:05,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.0,9.69,8.59,0,2,8,decision_change,
+2026-06-07T14:51:05,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.5,10.05,8.31,0,3,7,decision_change,
+2026-06-07T14:51:06,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.2,9.79,8.48,0,2,8,decision_change,
+2026-06-07T14:51:06,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.2,10.01,8.31,0,3,7,decision_change,
+2026-06-07T14:51:06,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.2,9.87,8.55,0,2,8,decision_change,
+2026-06-07T14:51:06,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.1,9.94,8.46,0,3,7,decision_change,
+2026-06-07T14:51:06,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.9,9.85,8.41,0,2,8,decision_change,
+2026-06-07T14:51:07,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.2,10.20,8.32,0,3,7,decision_change,
+2026-06-07T14:51:07,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.2,9.88,8.55,0,2,8,decision_change,
+2026-06-07T14:51:08,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.5,10.04,8.47,0,3,7,decision_change,
+2026-06-07T14:51:09,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.2,9.74,8.43,0,2,8,decision_change,
+2026-06-07T14:51:09,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.4,9.87,8.34,0,3,7,decision_change,
+2026-06-07T14:51:10,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.3,9.77,8.44,0,2,8,decision_change,
+2026-06-07T14:51:10,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.7,9.88,8.31,0,3,7,decision_change,
+2026-06-07T14:51:10,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,5.9,9.67,8.59,0,2,8,decision_change,
+2026-06-07T14:51:11,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.4,9.86,8.17,0,3,7,decision_change,
+2026-06-07T14:51:12,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.4,9.66,8.50,0,2,8,decision_change,
+2026-06-07T14:51:12,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.8,10.28,8.27,0,3,7,decision_change,
+2026-06-07T14:51:12,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.9,9.83,8.40,0,2,8,decision_change,
+2026-06-07T14:51:13,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.3,9.86,8.35,0,3,7,decision_change,
+2026-06-07T14:51:13,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.77,8.36,0,2,8,decision_change,
+2026-06-07T14:51:13,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.2,9.78,8.29,0,3,7,decision_change,
+2026-06-07T14:51:13,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.79,8.38,0,2,8,decision_change,
+2026-06-07T14:51:14,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.1,9.90,8.25,0,3,7,decision_change,
+2026-06-07T14:51:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,8.0,9.93,8.47,0,2,8,decision_change,
+2026-06-07T14:51:16,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.8,9.99,8.38,0,3,7,decision_change,
+2026-06-07T14:51:16,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.5,9.73,8.55,0,2,8,decision_change,
+2026-06-07T14:51:16,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.2,9.99,8.31,0,3,7,decision_change,
+2026-06-07T14:51:20,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.9,9.88,8.42,0,2,8,decision_change,
+2026-06-07T14:51:21,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.2,9.97,8.30,0,3,7,decision_change,
+2026-06-07T14:51:22,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,8.0,9.81,8.36,0,2,8,decision_change,
+2026-06-07T14:51:22,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.7,9.94,8.35,0,3,7,decision_change,
+2026-06-07T14:51:23,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.5,9.83,8.47,0,2,8,decision_change,
+2026-06-07T14:51:23,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.1,10.03,8.53,0,3,7,decision_change,
+2026-06-07T14:51:23,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.8,9.84,8.59,0,2,8,decision_change,
+2026-06-07T14:51:24,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.6,10.02,8.43,0,3,7,decision_change,
+2026-06-07T14:51:24,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.2,9.88,8.54,0,2,8,decision_change,
+2026-06-07T14:51:25,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.4,9.89,8.37,0,3,7,decision_change,
+2026-06-07T14:51:25,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,6.1,9.73,8.60,0,2,8,decision_change,
+2026-06-07T14:51:25,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.9,10.09,8.43,0,3,7,decision_change,
+2026-06-07T14:51:25,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,7.8,9.85,8.43,0,2,8,decision_change,
+2026-06-07T14:51:25,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,8.2,9.91,8.40,0,3,7,decision_change,
+2026-06-07T14:51:27,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,0.4,19.20,19.35,0,2,8,decision_change,
+2026-06-07T14:51:45,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,11.1,11.40,9.12,0,3,7,decision_change,
+2026-06-07T14:51:47,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,0.6,32.76,33.15,0,2,8,decision_change,
+2026-06-07T14:51:52,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,14.7,9.47,7.05,0,3,7,decision_change,
+2026-06-07T14:51:53,parle_biscuit_v2,UNCERTAIN,UNCERTAIN,NOT OK,1.6,14.77,14.30,0,2,8,decision_change,
+2026-06-07T14:51:54,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.8,8.75,7.04,0,3,7,decision_change,
+2026-06-07T14:51:54,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,11.8,11.75,9.28,0,7,3,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145154_707289.jpg
+2026-06-07T14:51:54,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.0,11.55,9.45,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145154_938863.jpg
+2026-06-07T14:51:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,12.1,11.64,9.13,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145155_118017.jpg
+2026-06-07T14:51:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,11.0,11.45,9.18,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145155_312426.jpg
+2026-06-07T14:51:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.9,11.40,9.17,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145155_468474.jpg
+2026-06-07T14:51:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,12.5,11.45,8.90,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145155_681503.jpg
+2026-06-07T14:51:55,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,10.9,11.03,8.85,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145155_855892.jpg
+2026-06-07T14:51:56,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,12.0,11.18,8.78,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_052201.jpg
+2026-06-07T14:51:56,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,11.0,11.07,8.89,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_220598.jpg
+2026-06-07T14:51:56,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,9.9,10.97,9.00,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_399372.jpg
+2026-06-07T14:51:56,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,24.1,8.61,5.27,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145156_793310.jpg
+2026-06-07T14:51:57,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,19.5,8.45,5.70,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_125609.jpg
+2026-06-07T14:51:57,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,20.7,8.39,5.51,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_313672.jpg
+2026-06-07T14:51:57,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,25.2,8.66,5.17,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_685151.jpg
+2026-06-07T14:51:57,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,23.9,8.64,5.30,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145157_953167.jpg
+2026-06-07T14:51:58,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,26.6,8.73,5.06,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_189126.jpg
+2026-06-07T14:51:58,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,23.5,8.46,5.24,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_385914.jpg
+2026-06-07T14:51:58,parle_biscuit_v2,NOT OK,NOT OK,NOT OK,30.9,8.94,4.72,0,10,0,image_saved,products\parle_biscuit_v2\outputs\live_parle_biscuit_v2_20260607_145158_683886.jpg

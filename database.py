@@ -1,6 +1,12 @@
 import mysql.connector
+from datetime import date, datetime
+from decimal import Decimal
 
 from db_config import get_database_config
+
+
+VALID_RESULTS = {"OK", "NOT OK", "UNCERTAIN"}
+VALID_STATUSES = {"PASS", "FAIL", "REVIEW"}
 
 
 def get_connection():
@@ -94,3 +100,193 @@ def insert_inspection_record(
     connection.close()
 
     return record_id
+
+
+def serialize_database_value(value):
+    if isinstance(value, (datetime, date)):
+        return value.isoformat(sep=" ")
+
+    if isinstance(value, Decimal):
+        return float(value)
+
+    return value
+
+
+def serialize_row(row):
+    return {
+        key: serialize_database_value(value)
+        for key, value in row.items()
+    }
+
+
+def normalize_end_date(value):
+    if value and len(value) == 10:
+        return f"{value} 23:59:59"
+
+    return value
+
+
+def build_inspection_filters(
+    product_name=None,
+    result=None,
+    status=None,
+    start_date=None,
+    end_date=None,
+):
+    filters = []
+    params = []
+
+    if product_name:
+        filters.append("product_name = %s")
+        params.append(product_name)
+
+    if result:
+        result = result.upper()
+        if result not in VALID_RESULTS:
+            raise ValueError(
+                "Invalid result. Use one of: OK, NOT OK, UNCERTAIN."
+            )
+        filters.append("result = %s")
+        params.append(result)
+
+    if status:
+        status = status.upper()
+        if status not in VALID_STATUSES:
+            raise ValueError(
+                "Invalid status. Use one of: PASS, FAIL, REVIEW."
+            )
+        filters.append("status = %s")
+        params.append(status)
+
+    if start_date:
+        filters.append("inspected_at >= %s")
+        params.append(start_date)
+
+    if end_date:
+        filters.append("inspected_at <= %s")
+        params.append(normalize_end_date(end_date))
+
+    where_clause = ""
+    if filters:
+        where_clause = "WHERE " + " AND ".join(filters)
+
+    return where_clause, params
+
+
+def fetch_inspection_records(
+    product_name=None,
+    result=None,
+    status=None,
+    start_date=None,
+    end_date=None,
+    limit=100,
+    offset=0,
+):
+    where_clause, params = build_inspection_filters(
+        product_name=product_name,
+        result=result,
+        status=status,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        f"""
+        SELECT
+            id,
+            product_id,
+            product_name,
+            result,
+            prediction,
+            status,
+            defect,
+            confidence,
+            image_path,
+            inspected_at,
+            created_at
+        FROM inspection_records
+        {where_clause}
+        ORDER BY inspected_at DESC, id DESC
+        LIMIT %s OFFSET %s
+        """,
+        (*params, limit, offset),
+    )
+    rows = [serialize_row(row) for row in cursor.fetchall()]
+
+    cursor.close()
+    connection.close()
+
+    return rows
+
+
+def fetch_recent_inspections(limit=10, product_name=None):
+    return fetch_inspection_records(
+        product_name=product_name,
+        limit=limit,
+        offset=0,
+    )
+
+
+def fetch_inspection_summary(
+    product_name=None,
+    start_date=None,
+    end_date=None,
+):
+    where_clause, params = build_inspection_filters(
+        product_name=product_name,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        f"""
+        SELECT
+            COUNT(*) AS total,
+            SUM(result = 'OK') AS ok_count,
+            SUM(result = 'NOT OK') AS not_ok_count,
+            SUM(result = 'UNCERTAIN') AS uncertain_count,
+            SUM(status = 'PASS') AS pass_count,
+            SUM(status = 'FAIL') AS fail_count,
+            SUM(status = 'REVIEW') AS review_count
+        FROM inspection_records
+        {where_clause}
+        """,
+        tuple(params),
+    )
+    totals = serialize_row(cursor.fetchone())
+
+    cursor.execute(
+        f"""
+        SELECT product_name, COUNT(*) AS total
+        FROM inspection_records
+        {where_clause}
+        GROUP BY product_name
+        ORDER BY total DESC, product_name ASC
+        """,
+        tuple(params),
+    )
+    by_product = [serialize_row(row) for row in cursor.fetchall()]
+
+    cursor.close()
+    connection.close()
+
+    return {
+        "total": int(totals.get("total") or 0),
+        "by_result": {
+            "OK": int(totals.get("ok_count") or 0),
+            "NOT OK": int(totals.get("not_ok_count") or 0),
+            "UNCERTAIN": int(totals.get("uncertain_count") or 0),
+        },
+        "by_status": {
+            "PASS": int(totals.get("pass_count") or 0),
+            "FAIL": int(totals.get("fail_count") or 0),
+            "REVIEW": int(totals.get("review_count") or 0),
+        },
+        "by_product": by_product,
+    }
