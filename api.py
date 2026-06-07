@@ -229,6 +229,28 @@ DASHBOARD_TEMPLATE = """
             color: var(--muted);
         }
 
+        .preview {
+            display: inline-grid;
+            place-items: center;
+            width: 112px;
+            height: 76px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: #edf3f0;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .preview img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         @media (max-width: 920px) {
             header {
                 display: block;
@@ -371,7 +393,15 @@ DASHBOARD_TEMPLATE = """
                         <td>{{ record.prediction }}</td>
                         <td>{{ record.reviewed_status or record.status }}</td>
                         <td>{{ "%.2f"|format(record.confidence or 0) }}%</td>
-                        <td>{{ record.image_path or "-" }}</td>
+                        <td>
+                            {% if record.image_available %}
+                            <a class="preview" href="{{ url_for('inspection_image', record_id=record.id) }}" target="_blank" title="{{ record.image_path }}">
+                                <img src="{{ url_for('inspection_image', record_id=record.id) }}" alt="Inspection record {{ record.id }}">
+                            </a>
+                            {% else %}
+                            <span class="preview">No image</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -637,8 +667,8 @@ REVIEW_TEMPLATE = """
         <div class="grid">
             {% for record in records %}
             <article class="case">
-                {% if record.image_path %}
-                <img src="{{ url_for('review_image', record_id=record.id) }}" alt="Inspection record {{ record.id }}">
+                {% if record.image_available %}
+                <img src="{{ url_for('inspection_image', record_id=record.id) }}" alt="Inspection record {{ record.id }}">
                 {% else %}
                 <div class="missing-image">No image saved</div>
                 {% endif %}
@@ -736,6 +766,14 @@ def safe_workspace_path(path_value):
     return resolved_path
 
 
+def attach_image_availability(records):
+    for record in records:
+        image_path = safe_workspace_path(record.get("image_path"))
+        record["image_available"] = bool(image_path and image_path.exists())
+
+    return records
+
+
 @app.errorhandler(ValueError)
 def handle_value_error(error):
     return error_response(str(error), 400)
@@ -780,6 +818,7 @@ def dashboard():
         start_date=start_date,
         end_date=end_date,
     )
+    attach_image_availability(recent_records)
     product_names = fetch_product_names()
 
     return render_template_string(
@@ -804,6 +843,7 @@ def review_cases():
         limit=100,
         product_name=product_name,
     )
+    attach_image_availability(records)
 
     return render_template_string(
         REVIEW_TEMPLATE,
@@ -813,8 +853,8 @@ def review_cases():
     )
 
 
-@app.get("/review/<int:record_id>/image")
-def review_image(record_id):
+@app.get("/inspection-records/<int:record_id>/image")
+def inspection_image(record_id):
     record = fetch_inspection_record(record_id)
     if not record:
         abort(404)
@@ -824,6 +864,11 @@ def review_image(record_id):
         abort(404)
 
     return send_file(image_path)
+
+
+@app.get("/review/<int:record_id>/image")
+def review_image(record_id):
+    return inspection_image(record_id)
 
 
 @app.post("/review/<int:record_id>")
