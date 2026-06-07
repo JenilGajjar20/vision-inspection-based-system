@@ -276,17 +276,27 @@ def fetch_inspection_summary(
     cursor.close()
     connection.close()
 
+    total = int(totals.get("total") or 0)
+    not_ok_count = int(totals.get("not_ok_count") or 0)
+    uncertain_count = int(totals.get("uncertain_count") or 0)
+    reject_percentage = round((not_ok_count / total) * 100, 2) if total else 0.0
+    uncertain_percentage = (
+        round((uncertain_count / total) * 100, 2) if total else 0.0
+    )
+
     return {
-        "total": int(totals.get("total") or 0),
+        "total": total,
         "by_result": {
             "OK": int(totals.get("ok_count") or 0),
-            "NOT OK": int(totals.get("not_ok_count") or 0),
-            "UNCERTAIN": int(totals.get("uncertain_count") or 0),
+            "NOT OK": not_ok_count,
+            "UNCERTAIN": uncertain_count,
         },
         "by_status": {
             "PASS": int(totals.get("pass_count") or 0),
             "FAIL": int(totals.get("fail_count") or 0),
             "REVIEW": int(totals.get("review_count") or 0),
         },
+        "reject_percentage": reject_percentage,
+        "uncertain_percentage": uncertain_percentage,
         "by_product": by_product,
     }

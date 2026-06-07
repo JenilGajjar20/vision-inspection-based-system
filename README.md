@@ -125,6 +125,21 @@ Default API base URL:
 http://127.0.0.1:5000
 ```
 
+Open the QMS dashboard overview page:
+
+```text
+http://127.0.0.1:5000/dashboard
+```
+
+Filter the dashboard by product or date range:
+
+```text
+http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2
+http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2&start_date=2026-06-07&end_date=2026-06-07
+```
+
+The dashboard shows total inspections, OK count, NOT OK count, UNCERTAIN count, rejection percentage, uncertain percentage, and recent inspection records.
+
 Health check:
 
 ```powershell
