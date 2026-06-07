@@ -109,6 +109,8 @@ products
 inspection_records
 ```
 
+Run the same command again after pulling schema changes. It safely adds missing inspection columns without recreating existing data.
+
 Keep real credentials out of Git. Use `.env.example` as a reference only.
 
 ## Backend API
@@ -131,6 +133,12 @@ Open the QMS dashboard overview page:
 http://127.0.0.1:5000/dashboard
 ```
 
+Open the UNCERTAIN review workflow:
+
+```text
+http://127.0.0.1:5000/review
+```
+
 Filter the dashboard by product, date range, result, or status:
 
 ```text
@@ -141,6 +149,10 @@ http://127.0.0.1:5000/dashboard?status=FAIL
 ```
 
 The dashboard shows total inspections, OK count, NOT OK count, UNCERTAIN count, rejection percentage, uncertain percentage, and recent inspection records.
+
+The review workflow lists pending `UNCERTAIN` records, shows the inspection image, original AI decision, prediction, confidence, and allows the user to mark the final decision as `OK` or `NOT OK`. Reviewed records store `final_decision`, `reviewed_status`, `reviewed_by`, `review_notes`, and `reviewed_at`, while the original AI decision remains preserved in `result`.
+
+During realtime inspection, automatic decision-change events save an annotated image for `OK`, `NOT OK`, and `UNCERTAIN` records. Press `s` to save an extra frame manually.
 
 Health check:
 
@@ -280,6 +292,7 @@ inspection_records
 ```
 
 Database logging saves meaningful events only, such as stable decision changes and saved live frames. It does not save every camera frame.
+Automatic decision changes save an image path for traceability and manual review.
 Stored database records include product name, stable result, raw prediction, confidence, image path, status, defect, and timestamp.
 
 To keep only CSV logging:
