@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS inspection_records (
     defect VARCHAR(100),
     confidence DECIMAL(6, 2),
     image_path VARCHAR(500),
+    final_decision ENUM('OK', 'NOT OK'),
+    reviewed_status ENUM('PASS', 'FAIL'),
+    reviewed_by VARCHAR(100),
+    review_notes TEXT,
     reviewed_result ENUM('OK', 'NOT OK'),
     reviewed_at TIMESTAMP NULL,
     inspected_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +63,30 @@ ADD COLUMN prediction ENUM('OK', 'NOT OK') NOT NULL AFTER result;
 ADD_REVIEWED_RESULT_COLUMN = """
 ALTER TABLE inspection_records
 ADD COLUMN reviewed_result ENUM('OK', 'NOT OK') NULL AFTER image_path;
+"""
+
+
+ADD_FINAL_DECISION_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN final_decision ENUM('OK', 'NOT OK') NULL AFTER image_path;
+"""
+
+
+ADD_REVIEWED_STATUS_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN reviewed_status ENUM('PASS', 'FAIL') NULL AFTER final_decision;
+"""
+
+
+ADD_REVIEWED_BY_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN reviewed_by VARCHAR(100) NULL AFTER reviewed_status;
+"""
+
+
+ADD_REVIEW_NOTES_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN review_notes TEXT NULL AFTER reviewed_by;
 """
 
 
@@ -105,6 +133,10 @@ def create_tables():
     database_cursor.execute(CREATE_PRODUCTS_TABLE)
     database_cursor.execute(CREATE_INSPECTION_RECORDS_TABLE)
     execute_ignore_existing_column(database_cursor, ADD_PREDICTION_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_FINAL_DECISION_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_REVIEWED_STATUS_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_REVIEWED_BY_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_REVIEW_NOTES_COLUMN)
     execute_ignore_existing_column(database_cursor, ADD_REVIEWED_RESULT_COLUMN)
     execute_ignore_existing_column(database_cursor, ADD_REVIEWED_AT_COLUMN)
     execute_ignore_duplicate(database_cursor, CREATE_INSPECTION_PRODUCT_INDEX)

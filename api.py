@@ -349,7 +349,8 @@ DASHBOARD_TEMPLATE = """
                     <tr>
                         <th>Time</th>
                         <th>Product</th>
-                        <th>Result</th>
+                        <th>AI Result</th>
+                        <th>Final Decision</th>
                         <th>Prediction</th>
                         <th>Status</th>
                         <th>Confidence</th>
@@ -366,8 +367,9 @@ DASHBOARD_TEMPLATE = """
                                 {{ record.result }}
                             </span>
                         </td>
+                        <td>{{ record.final_decision or "-" }}</td>
                         <td>{{ record.prediction }}</td>
-                        <td>{{ record.status }}</td>
+                        <td>{{ record.reviewed_status or record.status }}</td>
                         <td>{{ "%.2f"|format(record.confidence or 0) }}%</td>
                         <td>{{ record.image_path or "-" }}</td>
                     </tr>
@@ -468,18 +470,27 @@ REVIEW_TEMPLATE = """
         }
 
         select,
+        textarea,
+        input,
         button {
             min-height: 38px;
             border-radius: 6px;
             font: inherit;
         }
 
-        select {
+        select,
+        textarea,
+        input {
             width: 100%;
             border: 1px solid var(--border);
             padding: 8px 10px;
             color: var(--text);
             background: #ffffff;
+        }
+
+        textarea {
+            min-height: 70px;
+            resize: vertical;
         }
 
         button {
@@ -557,6 +568,12 @@ REVIEW_TEMPLATE = """
             gap: 8px;
         }
 
+        .review-fields {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -630,16 +647,29 @@ REVIEW_TEMPLATE = """
                     <span class="badge">{{ record.result }}</span>
                     <div class="details">
                         <div>Product: {{ record.product_name }}</div>
+                        <div>Original AI decision: {{ record.result }}</div>
                         <div>Prediction: {{ record.prediction }}</div>
                         <div>Confidence: {{ "%.2f"|format(record.confidence or 0) }}%</div>
                         <div>Inspected: {{ record.inspected_at }}</div>
                     </div>
-                    <form class="actions" method="post" action="{{ url_for('review_record', record_id=record.id) }}">
+                    <form method="post" action="{{ url_for('review_record', record_id=record.id) }}">
                         {% if product_name %}
                         <input type="hidden" name="product" value="{{ product_name }}">
                         {% endif %}
-                        <button class="ok-button" type="submit" name="reviewed_result" value="OK">Mark OK</button>
-                        <button class="ng-button" type="submit" name="reviewed_result" value="NOT OK">Mark NOT OK</button>
+                        <div class="review-fields">
+                            <label>
+                                Reviewed By
+                                <input name="reviewed_by" placeholder="operator or reviewer name">
+                            </label>
+                            <label>
+                                Review Notes
+                                <textarea name="review_notes" placeholder="optional notes"></textarea>
+                            </label>
+                        </div>
+                        <div class="actions">
+                            <button class="ok-button" type="submit" name="final_decision" value="OK">Mark OK</button>
+                            <button class="ng-button" type="submit" name="final_decision" value="NOT OK">Mark NOT OK</button>
+                        </div>
                     </form>
                 </div>
             </article>
@@ -798,8 +828,13 @@ def review_image(record_id):
 
 @app.post("/review/<int:record_id>")
 def review_record(record_id):
-    reviewed_result = request.form.get("reviewed_result", "")
-    was_updated = update_inspection_review(record_id, reviewed_result)
+    final_decision = request.form.get("final_decision", "")
+    was_updated = update_inspection_review(
+        record_id,
+        final_decision,
+        reviewed_by=request.form.get("reviewed_by"),
+        review_notes=request.form.get("review_notes"),
+    )
     if not was_updated:
         abort(404)
 

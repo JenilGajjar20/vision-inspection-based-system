@@ -225,6 +225,10 @@ def fetch_inspection_records(
             defect,
             confidence,
             image_path,
+            final_decision,
+            reviewed_status,
+            reviewed_by,
+            review_notes,
             reviewed_result,
             reviewed_at,
             inspected_at,
@@ -253,12 +257,51 @@ def fetch_recent_inspections(limit=10, product_name=None):
 
 
 def fetch_pending_uncertain_records(limit=100, product_name=None):
-    return fetch_inspection_records(
-        product_name=product_name,
-        result="UNCERTAIN",
-        limit=limit,
-        offset=0,
+    filters = ["result = 'UNCERTAIN'", "final_decision IS NULL"]
+    params = []
+
+    if product_name:
+        filters.append("product_name = %s")
+        params.append(product_name)
+
+    where_clause = "WHERE " + " AND ".join(filters)
+
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        f"""
+        SELECT
+            id,
+            product_id,
+            product_name,
+            result,
+            prediction,
+            status,
+            defect,
+            confidence,
+            image_path,
+            final_decision,
+            reviewed_status,
+            reviewed_by,
+            review_notes,
+            reviewed_result,
+            reviewed_at,
+            inspected_at,
+            created_at
+        FROM inspection_records
+        {where_clause}
+        ORDER BY inspected_at DESC, id DESC
+        LIMIT %s
+        """,
+        (*params, limit),
     )
+    rows = [serialize_row(row) for row in cursor.fetchall()]
+
+    cursor.close()
+    connection.close()
+
+    return rows
 
 
 def fetch_inspection_record(record_id):
@@ -277,6 +320,10 @@ def fetch_inspection_record(record_id):
             defect,
             confidence,
             image_path,
+            final_decision,
+            reviewed_status,
+            reviewed_by,
+            review_notes,
             reviewed_result,
             reviewed_at,
             inspected_at,
@@ -294,13 +341,17 @@ def fetch_inspection_record(record_id):
     return serialize_row(row) if row else None
 
 
-def update_inspection_review(record_id, reviewed_result):
-    reviewed_result = reviewed_result.upper()
-    if reviewed_result not in VALID_REVIEW_RESULTS:
+def update_inspection_review(
+    record_id,
+    final_decision,
+    reviewed_by=None,
+    review_notes=None,
+):
+    final_decision = final_decision.upper()
+    if final_decision not in VALID_REVIEW_RESULTS:
         raise ValueError("Invalid review result. Use OK or NOT OK.")
 
-    status = decision_to_status(reviewed_result)
-    defect = decision_to_defect(reviewed_result)
+    reviewed_status = decision_to_status(final_decision)
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -309,20 +360,22 @@ def update_inspection_review(record_id, reviewed_result):
         """
         UPDATE inspection_records
         SET
-            result = %s,
-            status = %s,
-            defect = %s,
+            final_decision = %s,
+            reviewed_status = %s,
+            reviewed_by = %s,
+            review_notes = %s,
             reviewed_result = %s,
             reviewed_at = CURRENT_TIMESTAMP
         WHERE id = %s
             AND result = 'UNCERTAIN'
-            AND reviewed_at IS NULL
+            AND final_decision IS NULL
         """,
         (
-            reviewed_result,
-            status,
-            defect,
-            reviewed_result,
+            final_decision,
+            reviewed_status,
+            reviewed_by or None,
+            review_notes or None,
+            final_decision,
             record_id,
         ),
     )
@@ -357,12 +410,12 @@ def fetch_inspection_summary(
         f"""
         SELECT
             COUNT(*) AS total,
-            SUM(result = 'OK') AS ok_count,
-            SUM(result = 'NOT OK') AS not_ok_count,
-            SUM(result = 'UNCERTAIN') AS uncertain_count,
-            SUM(status = 'PASS') AS pass_count,
-            SUM(status = 'FAIL') AS fail_count,
-            SUM(status = 'REVIEW') AS review_count
+            SUM(COALESCE(final_decision, result) = 'OK') AS ok_count,
+            SUM(COALESCE(final_decision, result) = 'NOT OK') AS not_ok_count,
+            SUM(COALESCE(final_decision, result) = 'UNCERTAIN') AS uncertain_count,
+            SUM(COALESCE(reviewed_status, status) = 'PASS') AS pass_count,
+            SUM(COALESCE(reviewed_status, status) = 'FAIL') AS fail_count,
+            SUM(COALESCE(reviewed_status, status) = 'REVIEW') AS review_count
         FROM inspection_records
         {where_clause}
         """,
