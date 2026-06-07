@@ -131,11 +131,13 @@ Open the QMS dashboard overview page:
 http://127.0.0.1:5000/dashboard
 ```
 
-Filter the dashboard by product or date range:
+Filter the dashboard by product, date range, result, or status:
 
 ```text
 http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2
 http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2&start_date=2026-06-07&end_date=2026-06-07
+http://127.0.0.1:5000/dashboard?product=parle_biscuit_v2&result=NOT%20OK
+http://127.0.0.1:5000/dashboard?status=FAIL
 ```
 
 The dashboard shows total inspections, OK count, NOT OK count, UNCERTAIN count, rejection percentage, uncertain percentage, and recent inspection records.
@@ -170,6 +172,7 @@ Fetch summary counts for dashboard cards and charts:
 ```powershell
 Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary"
 Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary?product=parle_biscuit_v2"
+Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary?product=parle_biscuit_v2&result=NOT%20OK"
 ```
 
 The API reads from the `inspection_records` table. Run `live_inspection.py` with database logging enabled before expecting records in the API response.

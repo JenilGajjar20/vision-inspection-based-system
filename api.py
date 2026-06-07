@@ -4,7 +4,7 @@ from mysql.connector import Error as MySQLError
 from database import (
     fetch_inspection_records,
     fetch_inspection_summary,
-    fetch_recent_inspections,
+    fetch_product_names,
 )
 
 
@@ -69,7 +69,7 @@ DASHBOARD_TEMPLATE = """
 
         form {
             display: grid;
-            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            grid-template-columns: repeat(6, minmax(120px, 1fr));
             gap: 10px;
             padding: 14px;
             background: var(--panel);
@@ -87,7 +87,8 @@ DASHBOARD_TEMPLATE = """
             text-transform: uppercase;
         }
 
-        input {
+        input,
+        select {
             width: 100%;
             min-height: 38px;
             border: 1px solid var(--border);
@@ -263,7 +264,12 @@ DASHBOARD_TEMPLATE = """
         <form method="get" action="/dashboard">
             <label>
                 Product
-                <input name="product" value="{{ product_name or '' }}" placeholder="parle_biscuit_v2">
+                <select name="product">
+                    <option value="">All Products</option>
+                    {% for product in product_names %}
+                    <option value="{{ product }}" {% if product == product_name %}selected{% endif %}>{{ product }}</option>
+                    {% endfor %}
+                </select>
             </label>
             <label>
                 Start Date
@@ -272,6 +278,24 @@ DASHBOARD_TEMPLATE = """
             <label>
                 End Date
                 <input type="date" name="end_date" value="{{ end_date or '' }}">
+            </label>
+            <label>
+                Result
+                <select name="result">
+                    <option value="">All Results</option>
+                    {% for option in ["OK", "NOT OK", "UNCERTAIN"] %}
+                    <option value="{{ option }}" {% if option == result %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                Status
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    {% for option in ["PASS", "FAIL", "REVIEW"] %}
+                    <option value="{{ option }}" {% if option == status %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
             </label>
             <button type="submit">Apply Filters</button>
         </form>
@@ -369,6 +393,10 @@ def product_query_value():
     return request.args.get("product") or request.args.get("product_name")
 
 
+def empty_query_value(name):
+    return request.args.get(name) or None
+
+
 def error_response(message, status_code):
     response = jsonify({"error": message})
     response.status_code = status_code
@@ -399,28 +427,38 @@ def dashboard_home():
 def dashboard():
     recent_limit = parse_int_query("limit", default=10, minimum=1, maximum=100)
     product_name = product_query_value()
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
+    start_date = empty_query_value("start_date")
+    end_date = empty_query_value("end_date")
+    result = empty_query_value("result")
+    status = empty_query_value("status")
 
     summary = fetch_inspection_summary(
         product_name=product_name,
+        result=result,
+        status=status,
         start_date=start_date,
         end_date=end_date,
     )
     recent_records = fetch_inspection_records(
         limit=recent_limit,
         product_name=product_name,
+        result=result,
+        status=status,
         start_date=start_date,
         end_date=end_date,
     )
+    product_names = fetch_product_names()
 
     return render_template_string(
         DASHBOARD_TEMPLATE,
         summary=summary,
         recent_records=recent_records,
+        product_names=product_names,
         product_name=product_name,
         start_date=start_date,
         end_date=end_date,
+        result=result,
+        status=status,
         recent_limit=recent_limit,
     )
 
@@ -454,9 +492,13 @@ def inspection_records():
 def recent_inspections():
     limit = parse_int_query("limit", default=10, minimum=1, maximum=100)
 
-    records = fetch_recent_inspections(
+    records = fetch_inspection_records(
         limit=limit,
         product_name=product_query_value(),
+        result=request.args.get("result"),
+        status=request.args.get("status"),
+        start_date=request.args.get("start_date"),
+        end_date=request.args.get("end_date"),
     )
 
     return jsonify(
@@ -472,6 +514,8 @@ def recent_inspections():
 def inspection_summary():
     summary = fetch_inspection_summary(
         product_name=product_query_value(),
+        result=request.args.get("result"),
+        status=request.args.get("status"),
         start_date=request.args.get("start_date"),
         end_date=request.args.get("end_date"),
     )
