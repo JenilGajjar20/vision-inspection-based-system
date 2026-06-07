@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS inspection_records (
     defect VARCHAR(100),
     confidence DECIMAL(6, 2),
     image_path VARCHAR(500),
+    reviewed_result ENUM('OK', 'NOT OK'),
+    reviewed_at TIMESTAMP NULL,
     inspected_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_inspection_product
@@ -51,6 +53,18 @@ ON inspection_records(inspected_at);
 ADD_PREDICTION_COLUMN = """
 ALTER TABLE inspection_records
 ADD COLUMN prediction ENUM('OK', 'NOT OK') NOT NULL AFTER result;
+"""
+
+
+ADD_REVIEWED_RESULT_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN reviewed_result ENUM('OK', 'NOT OK') NULL AFTER image_path;
+"""
+
+
+ADD_REVIEWED_AT_COLUMN = """
+ALTER TABLE inspection_records
+ADD COLUMN reviewed_at TIMESTAMP NULL AFTER reviewed_result;
 """
 
 
@@ -91,6 +105,8 @@ def create_tables():
     database_cursor.execute(CREATE_PRODUCTS_TABLE)
     database_cursor.execute(CREATE_INSPECTION_RECORDS_TABLE)
     execute_ignore_existing_column(database_cursor, ADD_PREDICTION_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_REVIEWED_RESULT_COLUMN)
+    execute_ignore_existing_column(database_cursor, ADD_REVIEWED_AT_COLUMN)
     execute_ignore_duplicate(database_cursor, CREATE_INSPECTION_PRODUCT_INDEX)
     execute_ignore_duplicate(database_cursor, CREATE_INSPECTION_TIME_INDEX)
 

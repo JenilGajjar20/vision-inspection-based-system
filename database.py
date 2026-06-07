@@ -7,6 +7,7 @@ from db_config import get_database_config
 
 VALID_RESULTS = {"OK", "NOT OK", "UNCERTAIN"}
 VALID_STATUSES = {"PASS", "FAIL", "REVIEW"}
+VALID_REVIEW_RESULTS = {"OK", "NOT OK"}
 
 
 def get_connection():
@@ -224,6 +225,8 @@ def fetch_inspection_records(
             defect,
             confidence,
             image_path,
+            reviewed_result,
+            reviewed_at,
             inspected_at,
             created_at
         FROM inspection_records
@@ -247,6 +250,89 @@ def fetch_recent_inspections(limit=10, product_name=None):
         limit=limit,
         offset=0,
     )
+
+
+def fetch_pending_uncertain_records(limit=100, product_name=None):
+    return fetch_inspection_records(
+        product_name=product_name,
+        result="UNCERTAIN",
+        limit=limit,
+        offset=0,
+    )
+
+
+def fetch_inspection_record(record_id):
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            product_id,
+            product_name,
+            result,
+            prediction,
+            status,
+            defect,
+            confidence,
+            image_path,
+            reviewed_result,
+            reviewed_at,
+            inspected_at,
+            created_at
+        FROM inspection_records
+        WHERE id = %s
+        """,
+        (record_id,),
+    )
+    row = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    return serialize_row(row) if row else None
+
+
+def update_inspection_review(record_id, reviewed_result):
+    reviewed_result = reviewed_result.upper()
+    if reviewed_result not in VALID_REVIEW_RESULTS:
+        raise ValueError("Invalid review result. Use OK or NOT OK.")
+
+    status = decision_to_status(reviewed_result)
+    defect = decision_to_defect(reviewed_result)
+
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        UPDATE inspection_records
+        SET
+            result = %s,
+            status = %s,
+            defect = %s,
+            reviewed_result = %s,
+            reviewed_at = CURRENT_TIMESTAMP
+        WHERE id = %s
+            AND result = 'UNCERTAIN'
+            AND reviewed_at IS NULL
+        """,
+        (
+            reviewed_result,
+            status,
+            defect,
+            reviewed_result,
+            record_id,
+        ),
+    )
+    updated_count = cursor.rowcount
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return updated_count > 0
 
 
 def fetch_inspection_summary(

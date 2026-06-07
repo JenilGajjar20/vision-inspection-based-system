@@ -116,6 +116,10 @@ def append_database_log(
     )
 
 
+def should_auto_save_decision_image(image_path):
+    return not image_path
+
+
 def build_log_row(
     product_name,
     stable_decision,
@@ -221,6 +225,11 @@ def main():
         )
 
         if stable_decision != last_stable_decision:
+            image_path = ""
+
+            if should_auto_save_decision_image(image_path):
+                image_path = save_live_frame(annotated, args.product)
+
             print(
                 f"Stable decision={stable_decision}, "
                 f"Frame decision={frame_decision}, "
@@ -241,6 +250,7 @@ def main():
                     ng_count,
                     uncertain_count,
                     event="decision_change",
+                    image_path=image_path,
                 )
             )
             if not args.disable_db_log:
@@ -249,6 +259,7 @@ def main():
                     stable_decision,
                     prediction,
                     confidence,
+                    image_path=image_path,
                 )
                 print(f"Database inspection record saved: {record_id}")
             last_stable_decision = stable_decision

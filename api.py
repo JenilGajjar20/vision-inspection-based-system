@@ -1,10 +1,24 @@
-from flask import Flask, jsonify, render_template_string, request
+from pathlib import Path
+
+from flask import (
+    abort,
+    Flask,
+    jsonify,
+    redirect,
+    render_template_string,
+    request,
+    send_file,
+    url_for,
+)
 from mysql.connector import Error as MySQLError
 
 from database import (
+    fetch_inspection_record,
     fetch_inspection_records,
     fetch_inspection_summary,
+    fetch_pending_uncertain_records,
     fetch_product_names,
+    update_inspection_review,
 )
 
 
@@ -370,6 +384,276 @@ DASHBOARD_TEMPLATE = """
 """
 
 
+REVIEW_TEMPLATE = """
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UNCERTAIN Review</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f4f7f6;
+            --panel: #ffffff;
+            --text: #16201d;
+            --muted: #60706a;
+            --border: #dbe5e1;
+            --ok: #0f8f5f;
+            --ng: #c73838;
+            --unc: #a66a00;
+            --accent: #2d6cdf;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            width: min(1180px, calc(100% - 32px));
+            margin: 28px auto;
+        }
+
+        header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 30px;
+            line-height: 1.15;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .subtitle,
+        .meta {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        form.filters {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) auto;
+            gap: 10px;
+            padding: 14px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        select,
+        button {
+            min-height: 38px;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        select {
+            width: 100%;
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            color: var(--text);
+            background: #ffffff;
+        }
+
+        button {
+            border: 0;
+            padding: 8px 14px;
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .apply {
+            align-self: end;
+            background: var(--accent);
+        }
+
+        .ok-button {
+            background: var(--ok);
+        }
+
+        .ng-button {
+            background: var(--ng);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+        }
+
+        .case {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .case img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: contain;
+            background: #101513;
+        }
+
+        .missing-image {
+            display: grid;
+            place-items: center;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #edf3f0;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .case-body {
+            padding: 14px;
+        }
+
+        .case h2 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .details {
+            display: grid;
+            gap: 6px;
+            margin: 10px 0 14px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: var(--unc);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .empty {
+            padding: 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+        }
+
+        @media (max-width: 620px) {
+            main {
+                width: min(100% - 20px, 1180px);
+                margin: 18px auto;
+            }
+
+            header,
+            form.filters {
+                display: block;
+            }
+
+            .apply {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <div>
+                <h1>UNCERTAIN Case Review</h1>
+                <div class="subtitle">Pending cases: {{ records|length }}</div>
+            </div>
+            <a href="/dashboard">Dashboard</a>
+        </header>
+
+        <form class="filters" method="get" action="/review">
+            <label>
+                Product
+                <select name="product">
+                    <option value="">All Products</option>
+                    {% for product in product_names %}
+                    <option value="{{ product }}" {% if product == product_name %}selected{% endif %}>{{ product }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button class="apply" type="submit">Apply Filter</button>
+        </form>
+
+        {% if records %}
+        <div class="grid">
+            {% for record in records %}
+            <article class="case">
+                {% if record.image_path %}
+                <img src="{{ url_for('review_image', record_id=record.id) }}" alt="Inspection record {{ record.id }}">
+                {% else %}
+                <div class="missing-image">No image saved</div>
+                {% endif %}
+                <div class="case-body">
+                    <h2>Record #{{ record.id }}</h2>
+                    <span class="badge">{{ record.result }}</span>
+                    <div class="details">
+                        <div>Product: {{ record.product_name }}</div>
+                        <div>Prediction: {{ record.prediction }}</div>
+                        <div>Confidence: {{ "%.2f"|format(record.confidence or 0) }}%</div>
+                        <div>Inspected: {{ record.inspected_at }}</div>
+                    </div>
+                    <form class="actions" method="post" action="{{ url_for('review_record', record_id=record.id) }}">
+                        {% if product_name %}
+                        <input type="hidden" name="product" value="{{ product_name }}">
+                        {% endif %}
+                        <button class="ok-button" type="submit" name="reviewed_result" value="OK">Mark OK</button>
+                        <button class="ng-button" type="submit" name="reviewed_result" value="NOT OK">Mark NOT OK</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">No pending UNCERTAIN records found.</div>
+        {% endif %}
+    </main>
+</body>
+</html>
+"""
+
+
 def parse_int_query(name, default, minimum=0, maximum=None):
     raw_value = request.args.get(name)
     if raw_value is None or raw_value == "":
@@ -401,6 +685,25 @@ def error_response(message, status_code):
     response = jsonify({"error": message})
     response.status_code = status_code
     return response
+
+
+def safe_workspace_path(path_value):
+    if not path_value:
+        return None
+
+    path = Path(path_value)
+    if not path.is_absolute():
+        path = Path.cwd() / path
+
+    resolved_path = path.resolve()
+    workspace_path = Path.cwd().resolve()
+
+    try:
+        resolved_path.relative_to(workspace_path)
+    except ValueError:
+        return None
+
+    return resolved_path
 
 
 @app.errorhandler(ValueError)
@@ -461,6 +764,50 @@ def dashboard():
         status=status,
         recent_limit=recent_limit,
     )
+
+
+@app.get("/review")
+def review_cases():
+    product_name = product_query_value()
+    product_names = fetch_product_names()
+    records = fetch_pending_uncertain_records(
+        limit=100,
+        product_name=product_name,
+    )
+
+    return render_template_string(
+        REVIEW_TEMPLATE,
+        records=records,
+        product_names=product_names,
+        product_name=product_name,
+    )
+
+
+@app.get("/review/<int:record_id>/image")
+def review_image(record_id):
+    record = fetch_inspection_record(record_id)
+    if not record:
+        abort(404)
+
+    image_path = safe_workspace_path(record.get("image_path"))
+    if not image_path or not image_path.exists():
+        abort(404)
+
+    return send_file(image_path)
+
+
+@app.post("/review/<int:record_id>")
+def review_record(record_id):
+    reviewed_result = request.form.get("reviewed_result", "")
+    was_updated = update_inspection_review(record_id, reviewed_result)
+    if not was_updated:
+        abort(404)
+
+    product_name = request.form.get("product")
+    if product_name:
+        return redirect(url_for("review_cases", product=product_name))
+
+    return redirect(url_for("review_cases"))
 
 
 @app.get("/api/inspection-records")
