@@ -25,6 +25,27 @@ Phase 1 details are documented in:
 docs/phase_1_summary.md
 ```
 
+## Phase 2 Scope
+
+Phase 2 adds the QMS application layer on top of the inspection workflow:
+
+```text
+1. Store realtime inspection records in MySQL
+2. Expose inspection data through a Flask backend API
+3. Show dashboard summary cards and recent inspection records
+4. Filter dashboard/API data by product, date range, result, and status
+5. Preview saved inspection images from dashboard and review pages
+6. Review pending UNCERTAIN cases manually
+7. Preserve original AI decision and final human decision separately
+8. Generate QMS reports from database records
+```
+
+Phase 2 details are documented in:
+
+```text
+docs/phase_2_summary.md
+```
+
 ## Product Structure
 
 Each product has its own recipe folder:
@@ -188,6 +209,47 @@ Invoke-RestMethod "http://127.0.0.1:5000/api/inspection-records/summary?product=
 ```
 
 The API reads from the `inspection_records` table. Run `live_inspection.py` with database logging enabled before expecting records in the API response.
+
+## Phase 2 Usage Flow
+
+Use this flow after the product dataset and ROI are already prepared:
+
+```powershell
+python init_database.py
+python live_inspection.py --product <product_name>
+python api.py
+```
+
+Then open:
+
+```text
+Dashboard: http://127.0.0.1:5000/dashboard
+Review:    http://127.0.0.1:5000/review
+```
+
+For a product-wise dashboard:
+
+```text
+http://127.0.0.1:5000/dashboard?product=<product_name>
+```
+
+For a date-wise dashboard:
+
+```text
+http://127.0.0.1:5000/dashboard?product=<product_name>&start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
+```
+
+For a database-backed report:
+
+```powershell
+python generate_report.py --product <product_name> --source db
+```
+
+For a date-wise database-backed report:
+
+```powershell
+python generate_report.py --product <product_name> --source db --start-date YYYY-MM-DD --end-date YYYY-MM-DD
+```
 
 ## Workflow
 
